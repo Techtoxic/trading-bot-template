@@ -121,33 +121,19 @@ const AppHeader = observer(() => {
         }
     }, [setIsAuthorizing]);
 
-    const renderAccountSection = useCallback(
-        (position: 'left' | 'right' = 'right') => {
-            // Show account switcher and logout when user is fully authenticated
+    const renderAccountSection = useCallback(() => {
+            // Show account switcher when user is fully authenticated
             if (activeLoginid && !is_account_regenerating) {
-                if (position === 'left' && !isDesktop) {
-                    // For mobile left section - only account switcher
-                    return (
-                        <div className='auth-actions'>
-                            <div className='account-info'>
-                                <AccountSwitcher activeAccount={activeAccount} />
-                            </div>
+                return (
+                    <div className='auth-actions'>
+                        <div className='account-info'>
+                            <AccountSwitcher activeAccount={activeAccount} />
                         </div>
-                    );
-                } else if (position === 'right') {
-                    // For right section - account switcher only (no transfer button)
-                    return (
-                        <div className='auth-actions'>
-                            <div className='account-info'>
-                                <AccountSwitcher activeAccount={activeAccount} />
-                            </div>
-                        </div>
-                    );
-                }
+                    </div>
+                );
             }
             // Show login button only when fully settled (not during OAuth flow)
             else if (
-                position === 'right' &&
                 !isOAuthPending &&
                 ((!is_account_regenerating && !isAuthorizing && !activeLoginid) || authTimeout)
             ) {
@@ -163,7 +149,7 @@ const AppHeader = observer(() => {
                 );
             }
             // Default: Show spinner during loading states or when authorizing
-            else if (position === 'right') {
+            else {
                 return (
                     <div className='auth-actions auth-actions--loading'>
                         <svg
@@ -191,7 +177,6 @@ const AppHeader = observer(() => {
         },
         [
             isAuthorizing,
-            isDesktop,
             activeLoginid,
             client,
             activeAccount,
@@ -217,11 +202,11 @@ const AppHeader = observer(() => {
                 <Wrapper variant='left'>
                     <MobileMenu onLogout={handleLogout} />
                     <AppLogo />
-                    {isDesktop ? <MenuItems /> : renderAccountSection('left')}
+                    {isDesktop && <MenuItems />}
                 </Wrapper>
                 <Wrapper variant='right'>
                     {isDesktop && <ChangeTheme />}
-                    {renderAccountSection('right')}
+                    {renderAccountSection()}
                 </Wrapper>
             </Header>
         </>

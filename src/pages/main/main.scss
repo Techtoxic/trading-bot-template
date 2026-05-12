@@ -66,27 +66,24 @@
 
         .dc-tabs {
             &__active-line {
-                background: var(--green);
-                box-shadow: 0 0 12px rgb(34 197 94 / 35%);
-                height: 3px;
-                border-radius: 2px;
-                transition: none;
+                display: none;
             }
 
             &__active {
-                background: #111827;
+                background: #1e293b;
                 color: #f8fafc;
-                box-shadow:
-                    0 4px 20px rgb(15 23 42 / 45%),
-                    inset 0 1px 0 rgb(255 255 255 / 12%);
-                border-radius: 12px 12px 0 0;
                 font-weight: 600;
+                border: 1px solid #334155;
+                border-bottom: 2px solid #22c55e;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                box-shadow: none;
             }
 
             &__list {
-                background: #090b10;
+                background: #0a0e17;
                 justify-content: start;
-                border-bottom: 1px solid rgb(255 255 255 / 10%);
+                border-bottom: 2px solid #1e293b;
                 box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
 
                 @include mobile-or-tablet-screen {
@@ -161,38 +158,28 @@
             }
 
             &__item {
-                border-top-left-radius: 12px;
-                border-top-right-radius: 12px;
-                height: 4.2rem;
-                padding: 0 1.15rem;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                height: 4rem;
+                padding: 0 1rem;
                 width: auto;
-                color: var(--text-general);
+                color: #94a3b8;
                 font-size: 13px;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                font-weight: 500;
+                background: #0f172a;
+                border: 1px solid #1e293b;
+                border-bottom: none;
+                margin-right: 4px;
+                transition: all 0.2s ease;
                 position: relative;
 
                 @include flex-center;
 
                 &:hover {
-                    background: var(--general-hover);
-                    box-shadow: 0 4px 16px rgb(34 197 94 / 18%);
-                    transform: translateY(-2px);
-                }
-
-                &:before {
-                    content: '';
-                    position: absolute;
-                    bottom: 0;
-                    left: 50%;
-                    width: 0;
-                    height: 2px;
-                    background: var(--green);
-                    transition: all 0.3s ease;
-                    transform: translateX(-50%);
-                }
-
-                &:hover:before {
-                    width: 80%;
+                    background: #1e293b;
+                    color: #e2e8f0;
                 }
 
                 svg {
@@ -203,16 +190,10 @@
                     fill: currentColor;
                     stroke: currentColor;
                     color: currentColor;
-                    transition: all 0.3s ease;
 
                     @include mobile-or-tablet-screen {
                         margin-inline-end: 0.4rem;
                     }
-                }
-
-                &:hover svg {
-                    color: #86efac;
-                    transform: scale(1.1);
                 }
 
                 &__icon {
