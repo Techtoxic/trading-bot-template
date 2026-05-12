@@ -817,8 +817,8 @@ const AppWrapper = observer(() => {
                                         src="https://app.deriv.com/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=accumulator"
                                         className='dtrader-iframe'
                                         title="DTrader"
-                                        allow="autoplay; encrypted-media; fullscreen"
-                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                                        allow="autoplay; encrypted-media; fullscreen; clipboard-write"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
                                     />
                                 </div>
                             </div>
