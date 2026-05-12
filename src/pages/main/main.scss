@@ -394,6 +394,7 @@
     z-index: -1;
     background: var(--general-main-1);
     height: var(--tab-content-height);
+    width: calc(100vw - 3.2rem);
 
     .injectionDiv {
         .blocklyTrash {
