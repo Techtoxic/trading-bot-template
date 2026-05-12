@@ -73,11 +73,12 @@
                 background: var(--general-section-1);
                 color: var(--text-prominent);
                 font-weight: 600;
-                border: 1px solid var(--border-normal);
-                border-bottom: 2px solid var(--green);
+                border: 1px solid var(--green);
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
-                box-shadow: none;
+                border-bottom-left-radius: 6px;
+                border-bottom-right-radius: 6px;
+                box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
             }
 
             &__list {
@@ -162,10 +163,10 @@
             &__item {
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
-                height: 2.8rem;
-                padding: 0.2rem 0.5rem 0.6rem;
+                border-bottom-left-radius: 6px;
+                border-bottom-right-radius: 6px;
+                height: 3.2rem;
+                padding: 0.3rem 0.6rem;
                 width: auto;
                 min-width: auto;
                 color: var(--text-general);
@@ -173,7 +174,6 @@
                 font-weight: 500;
                 background: var(--general-section-2);
                 border: 1px solid var(--border-normal);
-                border-bottom: none;
                 margin-right: 2px;
                 transition: all 0.2s ease;
                 position: relative;
