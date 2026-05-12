@@ -1,1 +1,119 @@
-// Bulk trading styles placeholder
+/**
+ * Bulk Trading Section Styles
+ * Professional dark theme with emerald accents
+ */
+
+.bulk-trading {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+
+    &__heading {
+        font-size: 1.75rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    &__description {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &__content-wrapper {
+        background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(34, 197, 94, 0.1);
+    }
+
+    &__bot-preview {
+        h3 {
+            font-size: 1.25rem;
+            color: #f8fafc;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+    }
+
+    &__features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+    }
+
+    &__load-btn {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+    .bulk-trading {
+        padding: 1rem;
+
+        &__heading {
+            font-size: 1.5rem;
+        }
+
+        &__description {
+            font-size: 0.875rem;
+        }
+
+        &__content-wrapper {
+            padding: 1.5rem;
+        }
+
+        &__features li {
+            font-size: 0.875rem;
+        }
+    }
+}
