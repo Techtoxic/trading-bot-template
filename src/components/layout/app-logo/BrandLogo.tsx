@@ -26,49 +26,18 @@ export const BrandLogo = ({
             className={className}
             aria-label="Brand Logo Placeholder"
         >
-            {/* [AI] ⚠️ PLACEHOLDER - Replace with your brand's SVG */}
-
-            {/* Dashed border box to indicate placeholder */}
-            <rect
-                x="1"
-                y="1"
-                width="118"
-                height="30"
-                rx="4"
-                opacity="0.3"
-                fill="none"
-            />
-
-            {/* Image icon placeholder */}
-            <g transform="translate(8, 8)">
-                {/* Picture frame icon */}
-                <rect x="0" y="0" width="16" height="16" rx="2" stroke={fill} strokeWidth="1.5" fill="none" opacity="0.4" />
-
-                {/* Mountain/landscape icon inside */}
-                <path
-                    d="M2 12L6 8L9 11L14 6V14H2V12Z"
-                    fill={fill}
-                    opacity="0.3"
-                />
-
-                {/* Sun/circle in corner */}
-                <circle cx="11" cy="5" r="1.5" fill={fill} opacity="0.3" />
-            </g>
-
             {/* MAXBOTS Brand Name */}
             <text
-                x="30"
+                x="10"
                 y="22"
                 fontFamily="system-ui, -apple-system, sans-serif"
-                fontSize="14"
-                fontWeight="700"
+                fontSize="16"
+                fontWeight="800"
                 fill={fill}
-                letterSpacing="1"
+                letterSpacing="1.5"
             >
                 MAXBOTS
             </text>
-
-            {/* [/AI] */}
         </svg>
     );
 };

@@ -775,9 +775,6 @@ const AppWrapper = observer(() => {
                                                         key={bot.filePath}
                                                         onClick={() => handleBotClick(bot)}
                                                     >
-                                                        <div className='free-bot__icon'>
-                                                            <BotIcon />
-                                                        </div>
                                                         <div className='free-bot__details'>
                                                             <h3 className='free-bot__title'>
                                                                 {bot.title.replace(/\.xml$/i, '')}
