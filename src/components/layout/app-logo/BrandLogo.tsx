@@ -55,18 +55,17 @@ export const BrandLogo = ({
                 <circle cx="11" cy="5" r="1.5" fill={fill} opacity="0.3" />
             </g>
 
-            {/* "YOUR LOGO" text */}
+            {/* MAXBOTS Brand Name */}
             <text
                 x="30"
-                y="20"
+                y="22"
                 fontFamily="system-ui, -apple-system, sans-serif"
-                fontSize="11"
-                fontWeight="500"
+                fontSize="14"
+                fontWeight="700"
                 fill={fill}
-                opacity="0.5"
-                letterSpacing="0.5"
+                letterSpacing="1"
             >
-                BRAND LOGO
+                MAXBOTS
             </text>
 
             {/* [/AI] */}

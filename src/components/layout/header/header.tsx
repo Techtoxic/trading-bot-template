@@ -11,6 +11,7 @@ import { navigateToTransfer } from '@/utils/transfer-utils';
 import { Localize } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { AppLogo } from '../app-logo';
+import ChangeTheme from '../footer/ChangeTheme';
 import AccountSwitcher from './account-switcher';
 import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
@@ -238,7 +239,10 @@ const AppHeader = observer(() => {
                     <AppLogo />
                     {isDesktop ? <MenuItems /> : renderAccountSection('left')}
                 </Wrapper>
-                <Wrapper variant='right'>{renderAccountSection('right')}</Wrapper>
+                <Wrapper variant='right'>
+                    <ChangeTheme />
+                    {renderAccountSection('right')}
+                </Wrapper>
             </Header>
         </>
     );
