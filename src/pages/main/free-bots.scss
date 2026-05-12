@@ -1,0 +1,135 @@
+/**
+ * Free Bots Section Styles
+ * Styled to match the dbot reference design
+ */
+
+.free-bots {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    &__heading {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text-general);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    &__content-wrapper {
+        background: var(--surface-secondary);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &__content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+}
+
+.free-bot {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface-primary);
+    border-radius: 8px;
+    border: 1px solid var(--border-normal);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: var(--surface-hover);
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        background: var(--brand-primary);
+        border-radius: 8px;
+        color: white;
+        flex-shrink: 0;
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    &__details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-general);
+        margin: 0 0 0.25rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+    .free-bots {
+        padding: 1rem;
+
+        &__heading {
+            font-size: 1.5rem;
+        }
+
+        &__content {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .free-bot {
+        padding: 0.75rem;
+
+        &__icon {
+            width: 40px;
+            height: 40px;
+
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        &__title {
+            font-size: 0.875rem;
+        }
+
+        &__description {
+            font-size: 0.75rem;
+        }
+    }
+}
