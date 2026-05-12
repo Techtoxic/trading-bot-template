@@ -818,7 +818,7 @@ const AppWrapper = observer(() => {
                                         className='dtrader-iframe'
                                         title="DTrader"
                                         allow="autoplay; encrypted-media; fullscreen; clipboard-write"
-                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation allow-top-navigation-by-user-activation"
                                     />
                                 </div>
                             </div>
