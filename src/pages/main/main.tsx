@@ -814,7 +814,7 @@ const AppWrapper = observer(() => {
                             >
                                 <div className='dtrader-container'>
                                     <iframe
-                                        src="https://app.deriv.com"
+                                        src="https://app.deriv.com/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=accumulator"
                                         className='dtrader-iframe'
                                         title="DTrader"
                                         allow="autoplay; encrypted-media; fullscreen"
