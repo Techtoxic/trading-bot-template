@@ -21,11 +21,11 @@
     }
 
     &__content-wrapper {
-        background: var(--general-main-1);
-        border: 1px solid var(--border-normal);
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
     }
 
     &__content {
