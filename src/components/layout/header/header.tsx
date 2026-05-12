@@ -205,7 +205,7 @@ const AppHeader = observer(() => {
                     {isDesktop && <MenuItems />}
                 </Wrapper>
                 <Wrapper variant='right'>
-                    {isDesktop && <ChangeTheme />}
+                    <ChangeTheme />
                     {renderAccountSection()}
                 </Wrapper>
             </Header>
