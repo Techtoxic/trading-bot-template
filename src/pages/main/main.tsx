@@ -36,11 +36,9 @@ import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import RunStrategy from '../dashboard/run-strategy';
-import DTrader from './dtrader';
 import simpleCopyTradingService from '../../services/simple-copy-trading';
 import './bulk-trading.scss';
 import './copy-trading.css';
-import './dtrader.scss';
 import './free-bots.scss';
 import './main.scss';
 
@@ -814,7 +812,15 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <DTrader />
+                                <div className='dtrader-container'>
+                                    <iframe
+                                        src="https://app.deriv.com"
+                                        className='dtrader-iframe'
+                                        title="DTrader"
+                                        allow="autoplay; encrypted-media; fullscreen"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                                    />
+                                </div>
                             </div>
                             <div
                                 label={
