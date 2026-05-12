@@ -1,0 +1,292 @@
+/**
+ * DTrader Trading Interface Styles
+ */
+
+.dtrader {
+    padding: 1rem;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-normal);
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+    }
+
+    &__connection {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-weight: 500;
+
+        &.connected {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        &.disconnected {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+    }
+
+    &__content {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    &__price-display {
+        background: var(--general-section-1);
+        border: 1px solid var(--border-normal);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    &__price {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--text-prominent);
+        font-family: 'Courier New', monospace;
+        margin: 0.5rem 0;
+    }
+
+    &__params {
+        display: grid;
+        gap: 1rem;
+        background: var(--general-section-1);
+        border: 1px solid var(--border-normal);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-general);
+        }
+
+        &--row {
+            flex-direction: row;
+            gap: 1rem;
+        }
+    }
+
+    &__field-half {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    &__select,
+    &__input {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 8px;
+        background: var(--general-main-1);
+        color: var(--text-prominent);
+        font-size: 0.875rem;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+    }
+
+    &__select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    &__contract-types {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    &__contract-btn {
+        padding: 1rem;
+        border: 2px solid var(--border-normal);
+        border-radius: 8px;
+        background: var(--general-main-1);
+        color: var(--text-general);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: var(--contract-color);
+            background: rgba(var(--contract-color-rgb), 0.05);
+        }
+
+        &.active {
+            border-color: var(--contract-color);
+            background: rgba(var(--contract-color-rgb), 0.1);
+            color: var(--contract-color);
+        }
+
+        &[style*="#22c55e"] {
+            --contract-color-rgb: 34, 197, 94;
+            --contract-color: #22c55e;
+        }
+
+        &[style*="#ef4444"] {
+            --contract-color-rgb: 239, 68, 68;
+            --contract-color: #ef4444;
+        }
+    }
+
+    &__trade-section {
+        background: var(--general-section-1);
+        border: 1px solid var(--border-normal);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    &__proposal {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: var(--general-main-1);
+        border-radius: 8px;
+    }
+
+    &__proposal-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        span:first-child {
+            color: var(--text-general);
+        }
+
+        span:last-child {
+            font-weight: 600;
+            color: var(--text-prominent);
+        }
+    }
+
+    &__payout {
+        color: #22c55e !important;
+    }
+
+    &__error {
+        padding: 0.75rem 1rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    &__result {
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 1rem;
+
+        &.won {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        &.lost {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+    }
+
+    &__profit {
+        display: block;
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    &__trade-btn {
+        width: 100%;
+        padding: 1rem !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+
+        &.CALL {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+            
+            &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+            }
+        }
+
+        &.PUT {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            
+            &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+            }
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__btn-price {
+        margin-left: 0.5rem;
+        opacity: 0.9;
+    }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+    .dtrader {
+        padding: 0.75rem;
+
+        &__price {
+            font-size: 2rem;
+        }
+
+        &__contract-types {
+            grid-template-columns: 1fr;
+        }
+
+        &__field--row {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
+}

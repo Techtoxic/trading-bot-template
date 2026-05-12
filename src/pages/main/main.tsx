@@ -36,9 +36,11 @@ import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import RunStrategy from '../dashboard/run-strategy';
+import DTrader from './dtrader';
 import simpleCopyTradingService from '../../services/simple-copy-trading';
 import './bulk-trading.scss';
 import './copy-trading.css';
+import './dtrader.scss';
 import './free-bots.scss';
 import './main.scss';
 
@@ -812,14 +814,7 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <div className='placeholder-panel'>
-                                    <h3>
-                                        <Localize i18n_default_text='DTrader Coming Soon' />
-                                    </h3>
-                                    <p>
-                                        <Localize i18n_default_text='We are setting up a full trading desk experience. Stay tuned!' />
-                                    </p>
-                                </div>
+                                <DTrader />
                             </div>
                             <div
                                 label={
