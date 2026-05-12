@@ -35,7 +35,7 @@ import { useDevice } from '@deriv-com/ui';
 import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
-import DTraderIframe from './dtrader-iframe';
+import DTrader from './dtrader';
 import RunStrategy from '../dashboard/run-strategy';
 import simpleCopyTradingService from '../../services/simple-copy-trading';
 import './bulk-trading.scss';
@@ -813,7 +813,7 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <DTraderIframe />
+                                <DTrader />
                             </div>
                             <div
                                 label={
