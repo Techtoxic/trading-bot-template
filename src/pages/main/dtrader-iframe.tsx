@@ -79,7 +79,7 @@ const DTraderIframe: React.FC = observer(() => {
                 className='dtrader-iframe__frame'
                 title='DTrader Pro'
                 allow='fullscreen'
-                sandbox='allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation-by-user-activation'
+                sandbox='allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation'
                 onLoad={() => setIsLoading(false)}
             />
         </div>
