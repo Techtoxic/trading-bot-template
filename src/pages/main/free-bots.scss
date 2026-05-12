@@ -102,7 +102,7 @@
     }
 }
 
-// Mobile responsive styles
+// Mobile responsive styles - 2 column grid
 @media (max-width: 768px) {
     .free-bots {
         padding: 1rem;
@@ -112,12 +112,16 @@
         }
 
         &__content {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
         }
     }
 
     .free-bot {
         padding: 0.75rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
 
         &__icon {
             width: 40px;
@@ -129,13 +133,26 @@
             }
         }
 
+        &__details {
+            width: 100%;
+        }
+
         &__title {
-            font-size: 0.875rem;
+            font-size: 0.8rem;
+            white-space: normal;
+            word-break: break-word;
         }
 
         &__description {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
+    }
+}
+
+// Very small screens - stack to 1 column
+@media (max-width: 380px) {
+    .free-bots__content {
+        grid-template-columns: 1fr;
     }
 }
 
