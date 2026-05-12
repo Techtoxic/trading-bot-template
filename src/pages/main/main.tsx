@@ -35,6 +35,7 @@ import { useDevice } from '@deriv-com/ui';
 import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
+import DTraderIframe from './dtrader-iframe';
 import RunStrategy from '../dashboard/run-strategy';
 import simpleCopyTradingService from '../../services/simple-copy-trading';
 import './bulk-trading.scss';
@@ -812,15 +813,7 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <div className='dtrader-container'>
-                                    <iframe
-                                        src="https://app.deriv.com/dtrader?chart_type=area&interval=1t&symbol=1HZ100V&trade_type=accumulator"
-                                        className='dtrader-iframe'
-                                        title="DTrader"
-                                        allow="autoplay; encrypted-media; fullscreen; clipboard-write; geolocation"
-                                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-top-navigation-by-user-activation"
-                                    />
-                                </div>
+                                <DTraderIframe />
                             </div>
                             <div
                                 label={
