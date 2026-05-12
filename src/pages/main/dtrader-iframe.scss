@@ -1,31 +1,10 @@
 .dtrader-iframe {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: calc(100vh - 50px);
     width: 100%;
     background: var(--general-main-1);
-
-    &__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 1.6rem;
-        border-bottom: 1px solid var(--general-hover);
-        background: var(--general-main-2);
-    }
-
-    &__title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--text-prominent);
-        margin: 0;
-    }
-
-    &__container {
-        flex: 1;
-        position: relative;
-        overflow: hidden;
-    }
+    position: relative;
 
     &__frame {
         width: 100%;
@@ -67,13 +46,6 @@
         background: var(--status-danger-background);
         border: 1px solid var(--status-danger);
         border-radius: 4px;
-        text-align: center;
-    }
-
-    &__login-banner {
-        padding: 0.8rem 1.6rem;
-        background: var(--status-warning-background);
-        border-top: 1px solid var(--status-warning);
         text-align: center;
     }
 }

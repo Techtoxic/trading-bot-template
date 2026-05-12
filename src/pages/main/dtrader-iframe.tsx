@@ -57,50 +57,31 @@ const DTraderIframe: React.FC = observer(() => {
 
     return (
         <div className='dtrader-iframe'>
-            <div className='dtrader-iframe__header'>
-                <h2 className='dtrader-iframe__title'>
-                    <Localize i18n_default_text='DTrader Pro' />
-                </h2>
-                <Text size='sm' color='secondary'>
-                    <Localize i18n_default_text='Powered by Deriv API' />
-                </Text>
-            </div>
-
-            <div className='dtrader-iframe__container'>
-                {isLoading && (
-                    <div className='dtrader-iframe__loading'>
-                        <div className='dtrader-iframe__spinner' />
-                        <Text size='sm'>
-                            <Localize i18n_default_text='Loading DTrader...' />
-                        </Text>
-                    </div>
-                )}
-
-                {error && (
-                    <div className='dtrader-iframe__error'>
-                        <Text size='sm' color='error'>
-                            {error}
-                        </Text>
-                    </div>
-                )}
-
-                <iframe
-                    src={getIframeSrc()}
-                    className='dtrader-iframe__frame'
-                    title='DTrader Pro'
-                    allow='fullscreen'
-                    sandbox='allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation'
-                    onLoad={() => setIsLoading(false)}
-                />
-            </div>
-
-            {!client?.is_logged_in && (
-                <div className='dtrader-iframe__login-banner'>
+            {isLoading && (
+                <div className='dtrader-iframe__loading'>
+                    <div className='dtrader-iframe__spinner' />
                     <Text size='sm'>
-                        <Localize i18n_default_text='Please log in to trade. Your session will be shared with DTrader.' />
+                        <Localize i18n_default_text='Loading DTrader...' />
                     </Text>
                 </div>
             )}
+
+            {error && (
+                <div className='dtrader-iframe__error'>
+                    <Text size='sm' color='error'>
+                        {error}
+                    </Text>
+                </div>
+            )}
+
+            <iframe
+                src={getIframeSrc()}
+                className='dtrader-iframe__frame'
+                title='DTrader Pro'
+                allow='fullscreen'
+                sandbox='allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation-by-user-activation'
+                onLoad={() => setIsLoading(false)}
+            />
         </div>
     );
 });
