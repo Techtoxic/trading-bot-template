@@ -28,7 +28,7 @@ export const BrandLogo = ({
         >
             {/* MAXBOTS Brand Name */}
             <text
-                x="10"
+                x="2"
                 y="22"
                 fontFamily="system-ui, -apple-system, sans-serif"
                 fontSize="16"
