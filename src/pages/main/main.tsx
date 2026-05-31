@@ -280,9 +280,9 @@ const AppWrapper = observer(() => {
     const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
     const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
     const [botGroups, setBotGroups] = useState<TBotGroup[]>([]);
-    const [copyTradingEnabled, setCopyTradingEnabled] = useState<boolean>(false);
-    const [copyTraderToken, setCopyTraderToken] = useState<string>('');
-    const [copyTradingStatus, setCopyTradingStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+    type TCopyEntry = { id: number; token: string; label: string; active: boolean; status: { type: 'success' | 'error' | 'info'; message: string } | null };
+    const [copyEntries, setCopyEntries] = useState<TCopyEntry[]>([{ id: 1, token: '', label: '', active: false, status: null }]);
+    const nextIdRef = React.useRef(2);
     
 
     // Trade type modal state
@@ -648,46 +648,53 @@ const AppWrapper = observer(() => {
         }
     }, [setActiveTab, onEntered]);
 
-    // Copy trading toggle handler — uses Deriv copy_start / copy_stop API
-    const handleCopyTradingToggle = useCallback(async () => {
-        if (!copyTradingEnabled) {
-            if (!copyTraderToken.trim()) {
-                setCopyTradingStatus({ type: 'error', message: "Please enter the trader's Read-Only token." });
+    // Multi-token copy trading helpers
+    const updateEntry = (id: number, patch: Partial<TCopyEntry>) =>
+        setCopyEntries(prev => prev.map(e => (e.id === id ? { ...e, ...patch } : e)));
+
+    const handleAddToken = () => {
+        setCopyEntries(prev => [...prev, { id: nextIdRef.current++, token: '', label: '', active: false, status: null }]);
+    };
+
+    const handleRemoveEntry = async (entry: TCopyEntry) => {
+        if (entry.active) {
+            try { await api_base.api?.send({ copy_stop: entry.token.trim() }); } catch (_) { /* ignore */ }
+        }
+        setCopyEntries(prev => prev.filter(e => e.id !== entry.id));
+    };
+
+    const handleToggleCopy = useCallback(async (entry: TCopyEntry) => {
+        if (!entry.active) {
+            if (!entry.token.trim()) {
+                updateEntry(entry.id, { status: { type: 'error', message: 'Enter a Read-Only token first.' } });
                 return;
             }
+            updateEntry(entry.id, { status: { type: 'info', message: 'Connecting…' } });
             try {
-                setCopyTradingStatus({ type: 'info', message: 'Connecting to trader…' });
-                const response = await api_base.api?.send({
-                    copy_start: copyTraderToken.trim(),
-                });
-                if (response?.error) {
-                    setCopyTradingStatus({ type: 'error', message: response.error.message || 'Failed to start copy trading.' });
+                const res = await api_base.api?.send({ copy_start: entry.token.trim() });
+                if (res?.error) {
+                    updateEntry(entry.id, { status: { type: 'error', message: res.error.message } });
                 } else {
-                    setCopyTradingEnabled(true);
-                    setCopyTradingStatus({ type: 'success', message: '✅ Copy trading active — mirroring trader\'s live positions.' });
+                    updateEntry(entry.id, { active: true, status: { type: 'success', message: '✅ Copying active' } });
                 }
             } catch (err: unknown) {
-                const msg = err instanceof Error ? err.message : 'Unknown error';
-                setCopyTradingStatus({ type: 'error', message: `Error: ${msg}` });
+                updateEntry(entry.id, { status: { type: 'error', message: err instanceof Error ? err.message : 'Error' } });
             }
         } else {
+            updateEntry(entry.id, { status: { type: 'info', message: 'Stopping…' } });
             try {
-                setCopyTradingStatus({ type: 'info', message: 'Stopping copy trading…' });
-                const response = await api_base.api?.send({
-                    copy_stop: copyTraderToken.trim(),
-                });
-                if (response?.error) {
-                    setCopyTradingStatus({ type: 'error', message: response.error.message || 'Failed to stop copy trading.' });
+                const res = await api_base.api?.send({ copy_stop: entry.token.trim() });
+                if (res?.error) {
+                    updateEntry(entry.id, { status: { type: 'error', message: res.error.message } });
                 } else {
-                    setCopyTradingEnabled(false);
-                    setCopyTradingStatus({ type: 'info', message: 'Copy trading stopped.' });
+                    updateEntry(entry.id, { active: false, status: { type: 'info', message: 'Stopped.' } });
                 }
             } catch (err: unknown) {
-                const msg = err instanceof Error ? err.message : 'Unknown error';
-                setCopyTradingStatus({ type: 'error', message: `Error: ${msg}` });
+                updateEntry(entry.id, { status: { type: 'error', message: err instanceof Error ? err.message : 'Error' } });
             }
         }
-    }, [copyTradingEnabled, copyTraderToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleTabChange = React.useCallback(
         (tab_index: number) => {
@@ -805,14 +812,14 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <div style={{ width: '100%', height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
+                                <div style={{ width: '100%', height: 'calc(100vh - 120px)', overflow: 'hidden', position: 'relative' }}>
                                     <iframe
                                         src='https://ddtrader.netlify.app/'
                                         width='100%'
-                                        height='100%'
+                                        height='calc(100% + 72px)'
                                         title='DTrader'
                                         frameBorder={0}
-                                        style={{ border: 'none', display: 'block' }}
+                                        style={{ border: 'none', display: 'block', marginTop: '-72px' }}
                                         allow='clipboard-read; clipboard-write'
                                     />
                                 </div>
@@ -917,54 +924,73 @@ const AppWrapper = observer(() => {
                                 id='id-copy-trading'
                             >
                                 <div className='copy-trading'>
-                                    <h2 className='copy-trading__heading'>
-                                        <Localize i18n_default_text='Copy Trading' />
-                                    </h2>
-                                    <p className='copy-trading__description'>
-                                        <Localize i18n_default_text="Enter a trader's Read-Only token to mirror their live trades into your account via Deriv's copy trading API." />
-                                    </p>
-                                    <div className='copy-trading__content-wrapper'>
-                                        {/* Token input */}
-                                        <div className='copy-trading__field-group'>
-                                            <label className='copy-trading__label'>
-                                                <Localize i18n_default_text="Trader's Read-Only API Token" />
-                                            </label>
-                                            <div className='copy-trading__input-row'>
+                                    <div className='copy-trading__header'>
+                                        <div>
+                                            <h2 className='copy-trading__heading'>Copy Trading</h2>
+                                            <p className='copy-trading__description'>
+                                                Add one or more trader Read-Only tokens to mirror their live trades.
+                                            </p>
+                                        </div>
+                                        <button className='copy-trading__add-btn' onClick={handleAddToken}>
+                                            + Add Trader
+                                        </button>
+                                    </div>
+
+                                    <div className='copy-trading__entries'>
+                                        {copyEntries.map((entry, idx) => (
+                                            <div key={entry.id} className={`copy-trading__entry ${entry.active ? 'copy-trading__entry--active' : ''}`}>
+                                                <div className='copy-trading__entry-header'>
+                                                    <span className='copy-trading__entry-num'>Trader {idx + 1}</span>
+                                                    {entry.active && <span className='copy-trading__live-dot' />}
+                                                    {copyEntries.length > 1 && (
+                                                        <button
+                                                            className='copy-trading__remove-btn'
+                                                            onClick={() => handleRemoveEntry(entry)}
+                                                        >✕</button>
+                                                    )}
+                                                </div>
                                                 <input
                                                     className='copy-trading__token-input'
                                                     type='text'
-                                                    placeholder='e.g. HKssR2os2KbKFJ3...'
-                                                    value={copyTraderToken}
-                                                    onChange={e => setCopyTraderToken(e.target.value)}
-                                                    disabled={copyTradingEnabled}
+                                                    placeholder='Read-Only API token (e.g. HKssR2os2KbKFJ3…)'
+                                                    value={entry.token}
+                                                    onChange={e => updateEntry(entry.id, { token: e.target.value })}
+                                                    disabled={entry.active}
                                                 />
-                                                <button
-                                                    className={`copy-trading__action-btn ${copyTradingEnabled ? 'copy-trading__action-btn--stop' : 'copy-trading__action-btn--start'}`}
-                                                    onClick={handleCopyTradingToggle}
-                                                    disabled={!copyTraderToken.trim() && !copyTradingEnabled}
-                                                >
-                                                    {copyTradingEnabled
-                                                        ? localize('Stop Copying')
-                                                        : localize('Start Copying')}
-                                                </button>
-                                            </div>
-                                            {copyTradingStatus && (
-                                                <div className={`copy-trading__status copy-trading__status--${copyTradingStatus.type}`}>
-                                                    {copyTradingStatus.message}
+                                                <input
+                                                    className='copy-trading__label-input'
+                                                    type='text'
+                                                    placeholder='Label (optional, e.g. "Client A")'
+                                                    value={entry.label}
+                                                    onChange={e => updateEntry(entry.id, { label: e.target.value })}
+                                                    disabled={entry.active}
+                                                />
+                                                <div className='copy-trading__entry-footer'>
+                                                    {entry.status && (
+                                                        <span className={`copy-trading__status copy-trading__status--${entry.status.type}`}>
+                                                            {entry.status.message}
+                                                        </span>
+                                                    )}
+                                                    <button
+                                                        className={`copy-trading__action-btn ${entry.active ? 'copy-trading__action-btn--stop' : 'copy-trading__action-btn--start'}`}
+                                                        onClick={() => handleToggleCopy(entry)}
+                                                        disabled={!entry.token.trim() && !entry.active}
+                                                    >
+                                                        {entry.active ? 'Stop' : 'Start Copying'}
+                                                    </button>
                                                 </div>
-                                            )}
-                                        </div>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                                        {/* How it works */}
-                                        <div className='copy-trading__info'>
-                                            <h4><Localize i18n_default_text='How it works' /></h4>
-                                            <ol className='copy-trading__steps'>
-                                                <li><Localize i18n_default_text='The trader generates a Read-Only token from their Deriv account settings.' /></li>
-                                                <li><Localize i18n_default_text='Paste the token above and click Start Copying.' /></li>
-                                                <li><Localize i18n_default_text="Deriv mirrors every trade they place into your account automatically." /></li>
-                                                <li><Localize i18n_default_text='Click Stop Copying at any time to unsubscribe.' /></li>
-                                            </ol>
-                                        </div>
+                                    <div className='copy-trading__info'>
+                                        <h4>How it works</h4>
+                                        <ol className='copy-trading__steps'>
+                                            <li>Trader shares their Deriv <strong>Read-Only API token</strong> with you.</li>
+                                            <li>Paste it above, add an optional label, and click <strong>Start Copying</strong>.</li>
+                                            <li>Deriv mirrors every trade they place into your account automatically.</li>
+                                            <li>Add multiple traders to copy from several accounts simultaneously.</li>
+                                        </ol>
                                     </div>
                                 </div>
                             </div>
