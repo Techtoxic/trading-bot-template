@@ -812,14 +812,21 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <div style={{ width: '100%', height: 'calc(100vh - 120px)', overflow: 'hidden', position: 'relative' }}>
+                                <div style={{ width: '100%', height: 'calc(100vh - 56px)', overflow: 'hidden', position: 'relative' }}>
                                     <iframe
                                         src='https://ddtrader.netlify.app/'
                                         width='100%'
-                                        height='calc(100% + 72px)'
+                                        style={{
+                                            border: 'none',
+                                            display: 'block',
+                                            position: 'absolute',
+                                            top: '-60px',
+                                            left: 0,
+                                            width: '100%',
+                                            height: 'calc(100% + 60px)',
+                                        }}
                                         title='DTrader'
                                         frameBorder={0}
-                                        style={{ border: 'none', display: 'block', marginTop: '-72px' }}
                                         allow='clipboard-read; clipboard-write'
                                     />
                                 </div>
