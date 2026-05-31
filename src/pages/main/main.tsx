@@ -46,19 +46,15 @@ import './main.scss';
 const BOT_ASSET_PATH = '/bots/';
 const BULK_TRADING_BOT_FILE = 'BULK_TRADING_APOLLO_DIGITS.xml';
 const BOT_FILE_NAMES = [
-    'EVEN_ODD MYTH V1.xml',
-    'EVEN MYTH V2.0.xml',
-    'ODD MYTH V2.xml',
-    'REBORN.xml',
-    'OVER 1 BLACKLIST .xml',
-    'dec under 8  special.xml',
-    'mega mind.xml',
-    'Over the years .xml',
-    'dec  entry point.xml',
-    'DREAMERS PACK.XML',
-    'SMART DIGIT BOT.xml',
-    'UNDER 9 5 OVER 3.xml',
-    'Reborn HnR.xml',
+    'GREEN_AND_RED_BAR.xml',
+    'maxxiey.xml',
+    'MAXXIEY_UNDER_BOT.xml',
+    'MAXXIEY_EVEN_ODD_SWITCH_BOT.xml',
+    'UNDER_WITH_ENTRY.xml',
+    'maxxiey__NEW_GPT_CONDITIONS_.xml',
+    'MAXXIEY_UNDER_PRO_BOT.xml',
+    'Nick_Wealth_Gen.xml',
+    'UNDER_9_5_OVER_3.xml',
 ];
 
 const DashboardIcon: React.FC = () => (
