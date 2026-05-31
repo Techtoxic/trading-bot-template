@@ -1,5 +1,5 @@
 /**
- * Free Bots Section — Professional dark navy + electric blue palette
+ * Free Bots Section — Bright, high-contrast dark navy + electric blue
  */
 
 .free-bots {
@@ -46,7 +46,7 @@
         margin: 0 0 0.25rem;
         padding: 0.35rem 0.75rem;
         border-left: 3px solid #3b82f6;
-        background: rgba(59, 130, 246, 0.07);
+        background: rgba(59, 130, 246, 0.18);
         border-radius: 0 6px 6px 0;
     }
 
@@ -62,7 +62,7 @@
     &__empty {
         text-align: center;
         padding: 3rem;
-        color: #64748b;
+        color: #94a3b8;
         font-style: italic;
     }
 }
@@ -73,20 +73,20 @@
     align-items: flex-start;
     gap: 0.25rem;
     padding: 0.75rem 0.9rem;
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(22, 36, 65, 0.92);
     border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.12);
+    border: 1.5px solid rgba(59, 130, 246, 0.32);
     cursor: pointer;
     transition: all 0.22s ease;
     min-height: 56px;
     backdrop-filter: blur(4px);
 
     &:hover {
-        background: rgba(30, 41, 59, 0.85);
-        border-color: rgba(59, 130, 246, 0.55);
+        background: rgba(30, 48, 85, 0.98);
+        border-color: rgba(59, 130, 246, 0.7);
         transform: translateY(-2px);
         box-shadow:
-            0 8px 24px rgba(59, 130, 246, 0.15),
+            0 8px 24px rgba(59, 130, 246, 0.22),
             0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
@@ -114,7 +114,7 @@
 
     &__description {
         font-size: 0.6rem;
-        color: #475569;
+        color: #94a3b8;
         margin: 0;
         font-weight: 500;
         text-transform: uppercase;
