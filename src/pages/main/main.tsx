@@ -35,9 +35,7 @@ import { useDevice } from '@deriv-com/ui';
 import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
-import DTrader from './dtrader';
 import RunStrategy from '../dashboard/run-strategy';
-import simpleCopyTradingService from '../../services/simple-copy-trading';
 import './bulk-trading.scss';
 import './copy-trading.css';
 import './free-bots.scss';
@@ -282,9 +280,10 @@ const AppWrapper = observer(() => {
     const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
     const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
     const [botGroups, setBotGroups] = useState<TBotGroup[]>([]);
-    const [copyTradingEnabled, setCopyTradingEnabled] = useState<boolean>(() => localStorage.getItem('copyTradingEnabled') === 'true');
-    const [realAccountBalance, setRealAccountBalance] = useState<number>(0);
-    const [isLoadingBalance, setIsLoadingBalance] = useState<boolean>(false);
+    const [copyTradingEnabled, setCopyTradingEnabled] = useState<boolean>(false);
+    const [copyTraderToken, setCopyTraderToken] = useState<string>('');
+    const [copyTradingStatus, setCopyTradingStatus] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+    
 
     // Trade type modal state
     const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
@@ -579,17 +578,6 @@ const AppWrapper = observer(() => {
         fetchBots();
     }, []);
 
-    // Initialize copy trading service with API helpers
-    React.useEffect(() => {
-        const initCopyTrading = async () => {
-            const { ApiHelpers } = await import('@/external/bot-skeleton/services/api/api-helpers');
-            if (ApiHelpers?.instance) {
-                simpleCopyTradingService.setApiHelpers(ApiHelpers.instance);
-            }
-        };
-        initCopyTrading();
-    }, []);
-
     // Handle bot click - load bot into workspace
     const handleBotClick = useCallback(async (bot: { title: string; xmlContent: string; filePath: string }) => {
         try {
@@ -660,90 +648,46 @@ const AppWrapper = observer(() => {
         }
     }, [setActiveTab, onEntered]);
 
-    // Fetch real account balance from client store
-    const fetchRealAccountBalance = useCallback(async () => {
-        try {
-            if (!client) {
-                console.log('Client not available');
-                setRealAccountBalance(0);
-                return;
-            }
-            if (!isAuthorized || isAuthorizing) {
-                return;
-            }
-
-            setIsLoadingBalance(true);
-
-            // Get all accounts and find the real account (not virtual)
-            let allAccounts = client.all_accounts_balance?.accounts;
-            if (!allAccounts || Object.keys(allAccounts).length === 0) {
-                try {
-                    const balanceResponse = await api_base.api?.send({ balance: 1, account: 'all' });
-                    if (balanceResponse?.balance?.accounts) {
-                        client.setAllAccountsBalance(balanceResponse.balance);
-                        allAccounts = balanceResponse.balance.accounts;
-                    }
-                } catch (balanceError) {
-                    console.error('Failed to request account balances:', balanceError);
-                }
-            }
-
-            if (!allAccounts || Object.keys(allAccounts).length === 0) {
-                console.log('No accounts balance data available');
-                const parsedBalance = Number(client.balance);
-                const fallbackBalance = Number.isFinite(parsedBalance) ? parsedBalance : 0;
-                setRealAccountBalance(fallbackBalance);
-                simpleCopyTradingService.updateRealAccountBalance(fallbackBalance);
-                return;
-            }
-
-            // Find the real account (non-virtual account)
-            const accountList = Object.values(allAccounts);
-            const realAccount = accountList.find((account: unknown) => {
-                return account && typeof account === 'object' && !(account as { is_virtual?: boolean }).is_virtual;
-            });
-
-            if (realAccount && (realAccount as { balance?: string | number }).balance !== undefined) {
-                const accountBalance = (realAccount as { balance?: string | number }).balance;
-                const balance = typeof accountBalance === 'string' ? parseFloat(accountBalance) : accountBalance || 0;
-                setRealAccountBalance(balance);
-                simpleCopyTradingService.updateRealAccountBalance(balance);
-            } else {
-                console.log('No real account found, falling back to current account balance');
-                const fallbackBalance = parseFloat(client.balance) || 0;
-                setRealAccountBalance(fallbackBalance);
-                simpleCopyTradingService.updateRealAccountBalance(fallbackBalance);
-            }
-        } catch (error) {
-            console.error('Failed to fetch real account balance:', error);
-            setRealAccountBalance(0);
-        } finally {
-            setIsLoadingBalance(false);
-        }
-    }, [client, isAuthorized, isAuthorizing]);
-
-    // Copy trading toggle handler
+    // Copy trading toggle handler — uses Deriv copy_start / copy_stop API
     const handleCopyTradingToggle = useCallback(async () => {
         if (!copyTradingEnabled) {
-            // Fetch real account balance before enabling
-            await fetchRealAccountBalance();
-
-            if (realAccountBalance === 0) {
-                alert('No balance in real account. Copy trading requires a real account with funds.');
+            if (!copyTraderToken.trim()) {
+                setCopyTradingStatus({ type: 'error', message: "Please enter the trader's Read-Only token." });
                 return;
             }
-
-            // Enable copy trading
-            simpleCopyTradingService.enableCopyTrading(realAccountBalance);
-            setCopyTradingEnabled(true);
-            localStorage.setItem('copyTradingEnabled', 'true');
+            try {
+                setCopyTradingStatus({ type: 'info', message: 'Connecting to trader…' });
+                const response = await api_base.api?.send({
+                    copy_start: copyTraderToken.trim(),
+                });
+                if (response?.error) {
+                    setCopyTradingStatus({ type: 'error', message: response.error.message || 'Failed to start copy trading.' });
+                } else {
+                    setCopyTradingEnabled(true);
+                    setCopyTradingStatus({ type: 'success', message: '✅ Copy trading active — mirroring trader\'s live positions.' });
+                }
+            } catch (err: unknown) {
+                const msg = err instanceof Error ? err.message : 'Unknown error';
+                setCopyTradingStatus({ type: 'error', message: `Error: ${msg}` });
+            }
         } else {
-            // Disable copy trading
-            simpleCopyTradingService.disableCopyTrading();
-            setCopyTradingEnabled(false);
-            localStorage.setItem('copyTradingEnabled', 'false');
+            try {
+                setCopyTradingStatus({ type: 'info', message: 'Stopping copy trading…' });
+                const response = await api_base.api?.send({
+                    copy_stop: copyTraderToken.trim(),
+                });
+                if (response?.error) {
+                    setCopyTradingStatus({ type: 'error', message: response.error.message || 'Failed to stop copy trading.' });
+                } else {
+                    setCopyTradingEnabled(false);
+                    setCopyTradingStatus({ type: 'info', message: 'Copy trading stopped.' });
+                }
+            } catch (err: unknown) {
+                const msg = err instanceof Error ? err.message : 'Unknown error';
+                setCopyTradingStatus({ type: 'error', message: `Error: ${msg}` });
+            }
         }
-    }, [copyTradingEnabled, fetchRealAccountBalance, realAccountBalance]);
+    }, [copyTradingEnabled, copyTraderToken]);
 
     const handleTabChange = React.useCallback(
         (tab_index: number) => {
@@ -861,7 +805,17 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-dtrader'
                             >
-                                <DTrader />
+                                <div style={{ width: '100%', height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
+                                    <iframe
+                                        src='https://ddtrader.netlify.app/'
+                                        width='100%'
+                                        height='100%'
+                                        title='DTrader'
+                                        frameBorder={0}
+                                        style={{ border: 'none', display: 'block' }}
+                                        allow='clipboard-read; clipboard-write'
+                                    />
+                                </div>
                             </div>
                             <div
                                 label={
@@ -966,65 +920,50 @@ const AppWrapper = observer(() => {
                                     <h2 className='copy-trading__heading'>
                                         <Localize i18n_default_text='Copy Trading' />
                                     </h2>
-                                    <div className='copy-trading__description'>
-                                        <Localize i18n_default_text='Mirror your demo trades into a live account whenever you are ready.' />
-                                    </div>
+                                    <p className='copy-trading__description'>
+                                        <Localize i18n_default_text="Enter a trader's Read-Only token to mirror their live trades into your account via Deriv's copy trading API." />
+                                    </p>
                                     <div className='copy-trading__content-wrapper'>
-                                        <div className='copy-trading__account-info'>
-                                            <div className='copy-trading__account'>
-                                                <h3>
-                                                    <Localize i18n_default_text='Real Account Balance' />
-                                                </h3>
-                                                <div className='copy-trading__balance'>
-                                                    <span className='copy-trading__balance-label'>
-                                                        <Localize i18n_default_text='Balance' />:
-                                                    </span>
-                                                    <span className='copy-trading__balance-amount'>
-                                                        {isLoadingBalance
-                                                            ? '…'
-                                                            : `$${realAccountBalance.toFixed(2)}`}
-                                                    </span>
-                                                    <button
-                                                        onClick={fetchRealAccountBalance}
-                                                        className='copy-trading__refresh-btn'
-                                                        disabled={isLoadingBalance}
-                                                    >
-                                                        {isLoadingBalance ? '…' : localize('Refresh')}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className='copy-trading__controls'>
-                                            <label className='copy-trading__toggle-label'>
-                                                <input
-                                                    type='checkbox'
-                                                    checked={copyTradingEnabled}
-                                                    onChange={handleCopyTradingToggle}
-                                                    disabled={isLoadingBalance}
-                                                />
-                                                <span className='copy-trading__toggle-slider' />
-                                                <span className='copy-trading__toggle-text'>
-                                                    {copyTradingEnabled
-                                                        ? localize('Copy Trading ON')
-                                                        : localize('Copy Trading OFF')}
-                                                </span>
+                                        {/* Token input */}
+                                        <div className='copy-trading__field-group'>
+                                            <label className='copy-trading__label'>
+                                                <Localize i18n_default_text="Trader's Read-Only API Token" />
                                             </label>
+                                            <div className='copy-trading__input-row'>
+                                                <input
+                                                    className='copy-trading__token-input'
+                                                    type='text'
+                                                    placeholder='e.g. HKssR2os2KbKFJ3...'
+                                                    value={copyTraderToken}
+                                                    onChange={e => setCopyTraderToken(e.target.value)}
+                                                    disabled={copyTradingEnabled}
+                                                />
+                                                <button
+                                                    className={`copy-trading__action-btn ${copyTradingEnabled ? 'copy-trading__action-btn--stop' : 'copy-trading__action-btn--start'}`}
+                                                    onClick={handleCopyTradingToggle}
+                                                    disabled={!copyTraderToken.trim() && !copyTradingEnabled}
+                                                >
+                                                    {copyTradingEnabled
+                                                        ? localize('Stop Copying')
+                                                        : localize('Start Copying')}
+                                                </button>
+                                            </div>
+                                            {copyTradingStatus && (
+                                                <div className={`copy-trading__status copy-trading__status--${copyTradingStatus.type}`}>
+                                                    {copyTradingStatus.message}
+                                                </div>
+                                            )}
                                         </div>
+
+                                        {/* How it works */}
                                         <div className='copy-trading__info'>
-                                            <h4>
-                                                <Localize i18n_default_text='How it works' />
-                                            </h4>
-                                            <ul>
-                                                <li>
-                                                    <Localize i18n_default_text='Trade on your demo account as usual.' />
-                                                </li>
-                                                <li>
-                                                    <Localize i18n_default_text='When enabled, the same parameters are executed on your real account.' />
-                                                </li>
-                                                <li>
-                                                    <Localize i18n_default_text='Disable anytime to pause mirroring.' />
-                                                </li>
-                                            </ul>
+                                            <h4><Localize i18n_default_text='How it works' /></h4>
+                                            <ol className='copy-trading__steps'>
+                                                <li><Localize i18n_default_text='The trader generates a Read-Only token from their Deriv account settings.' /></li>
+                                                <li><Localize i18n_default_text='Paste the token above and click Start Copying.' /></li>
+                                                <li><Localize i18n_default_text="Deriv mirrors every trade they place into your account automatically." /></li>
+                                                <li><Localize i18n_default_text='Click Stop Copying at any time to unsubscribe.' /></li>
+                                            </ol>
                                         </div>
                                     </div>
                                 </div>
