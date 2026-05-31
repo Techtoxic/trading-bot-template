@@ -45,16 +45,56 @@ import './main.scss';
 
 const BOT_ASSET_PATH = '/bots/';
 const BULK_TRADING_BOT_FILE = 'BULK_TRADING_APOLLO_DIGITS.xml';
-const BOT_FILE_NAMES = [
-    'GREEN_AND_RED_BAR.xml',
-    'maxxiey.xml',
-    'MAXXIEY_UNDER_BOT.xml',
-    'MAXXIEY_EVEN_ODD_SWITCH_BOT.xml',
-    'UNDER_WITH_ENTRY.xml',
-    'maxxiey__NEW_GPT_CONDITIONS_.xml',
-    'MAXXIEY_UNDER_PRO_BOT.xml',
-    'Nick_Wealth_Gen.xml',
-    'UNDER_9_5_OVER_3.xml',
+
+type TBot = { title: string; image: string; filePath: string; xmlContent: string };
+type TBotGroup = { label: string; bots: TBot[] };
+
+const BOT_GROUPS: { label: string; files: string[] }[] = [
+    {
+        label: 'Over / Under',
+        files: [
+            'UNDER_9_5_OVER_3.xml',
+            'UNDER_WITH_ENTRY.xml',
+            'OVER_2_WITH_ENTRY.xml',
+            'OVER_UNDER_WITH_ENTRYPOINT_.xml',
+            'MAXXIEY_UNDER_BOT.xml',
+            'MAXXIEY_UNDER_PRO_BOT.xml',
+        ],
+    },
+    {
+        label: 'Accumulators',
+        files: [
+            'Accumulators_.xml',
+            'Accumulators_stat.xml',
+            'ACCUMULATORS_WITH_MATINGALE.xml',
+            'ACCUMULATORS__STATS_BOT.xml',
+            'ACCUMULATORS__STATS_BOT_AND_RSI.xml',
+        ],
+    },
+    {
+        label: 'Differs',
+        files: [
+            'diff_v3.xml',
+            'DIFF_SMART_BOT__1_.xml',
+            'DIFFERS_GPT.xml',
+            'DIFFERS_2_TICKS_10S_DELAY.xml',
+            'DIFFERS_DIGIT_SWITCH_PRO__SMALLL_SCALE_TRADER_.xml',
+            'exitspot__DIFFER_MASTER.xml',
+        ],
+    },
+    {
+        label: 'General',
+        files: [
+            'GREEN_AND_RED_BAR.xml',
+            'maxxiey.xml',
+            'maxxiey__NEW_GPT_CONDITIONS_.xml',
+            'MAXXIEY_EVEN_ODD_SWITCH_BOT.xml',
+            'Nick_Wealth_Gen.xml',
+            'ant.xml',
+            'percentage_Even_Odd_Bot.xml',
+            'EMA_SMA__Sniper_Trend__v5__1_.xml',
+        ],
+    },
 ];
 
 const DashboardIcon: React.FC = () => (
@@ -241,7 +281,7 @@ const AppWrapper = observer(() => {
     const navigate = useNavigate();
     const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
     const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
-    const [bots, setBots] = useState<Array<{ title: string; image: string; filePath: string; xmlContent: string }>>([]);
+    const [botGroups, setBotGroups] = useState<TBotGroup[]>([]);
     const [copyTradingEnabled, setCopyTradingEnabled] = useState<boolean>(() => localStorage.getItem('copyTradingEnabled') === 'true');
     const [realAccountBalance, setRealAccountBalance] = useState<number>(0);
     const [isLoadingBalance, setIsLoadingBalance] = useState<boolean>(false);
@@ -499,31 +539,38 @@ const AppWrapper = observer(() => {
         };
     }, [dashboard_strategies, active_tab]);
 
-    // Fetch bots from XML files
+    // Fetch bots from XML files grouped by category
     React.useEffect(() => {
         const fetchBots = async () => {
             try {
-                const botPromises = BOT_FILE_NAMES.map(async fileName => {
-                    try {
-                        const response = await fetch(`${BOT_ASSET_PATH}${fileName}`);
-                        if (!response.ok) {
-                            console.warn(`Failed to load bot file: ${fileName}`);
-                            return null;
-                        }
-                        const text = await response.text();
-                        return {
-                            title: fileName.replace(/\.xml$/i, ''),
-                            image: '',
-                            filePath: `${BOT_ASSET_PATH}${fileName}`,
-                            xmlContent: text,
-                        };
-                    } catch (err) {
-                        console.warn(`Error loading bot ${fileName}:`, err);
-                        return null;
-                    }
-                });
-                const loadedBots = (await Promise.all(botPromises)).filter((b): b is NonNullable<typeof b> => b !== null);
-                setBots(loadedBots);
+                const groupResults: TBotGroup[] = await Promise.all(
+                    BOT_GROUPS.map(async group => {
+                        const botPromises = group.files.map(async fileName => {
+                            try {
+                                const response = await fetch(`${BOT_ASSET_PATH}${fileName}`);
+                                if (!response.ok) {
+                                    console.warn(`Failed to load bot file: ${fileName}`);
+                                    return null;
+                                }
+                                const text = await response.text();
+                                return {
+                                    title: fileName.replace(/\.xml$/i, '').replace(/_/g, ' '),
+                                    image: '',
+                                    filePath: `${BOT_ASSET_PATH}${fileName}`,
+                                    xmlContent: text,
+                                } as TBot;
+                            } catch (err) {
+                                console.warn(`Error loading bot ${fileName}:`, err);
+                                return null;
+                            }
+                        });
+                        const loadedBots = (await Promise.all(botPromises)).filter(
+                            (b): b is TBot => b !== null
+                        );
+                        return { label: group.label, bots: loadedBots };
+                    })
+                );
+                setBotGroups(groupResults.filter(g => g.bots.length > 0));
             } catch (error) {
                 console.error('Error fetching bots:', error);
             }
@@ -764,25 +811,30 @@ const AppWrapper = observer(() => {
                                         <Localize i18n_default_text='Free Bots' />
                                     </h2>
                                     <div className='free-bots__content-wrapper'>
-                                        {bots.length ? (
-                                            <ul className='free-bots__content'>
-                                                {bots.map(bot => (
-                                                    <li
-                                                        className='free-bot'
-                                                        key={bot.filePath}
-                                                        onClick={() => handleBotClick(bot)}
-                                                    >
-                                                        <div className='free-bot__details'>
-                                                            <h3 className='free-bot__title'>
-                                                                {bot.title.replace(/\.xml$/i, '')}
-                                                            </h3>
-                                                            <div className='free-bot__description'>
-                                                                <Localize i18n_default_text='Quick-load XML' />
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                        {botGroups.length ? (
+                                            botGroups.map(group => (
+                                                <div className='free-bots__group' key={group.label}>
+                                                    <h3 className='free-bots__group-label'>{group.label}</h3>
+                                                    <ul className='free-bots__content'>
+                                                        {group.bots.map(bot => (
+                                                            <li
+                                                                className='free-bot'
+                                                                key={bot.filePath}
+                                                                onClick={() => handleBotClick(bot)}
+                                                            >
+                                                                <div className='free-bot__details'>
+                                                                    <h3 className='free-bot__title'>
+                                                                        {bot.title}
+                                                                    </h3>
+                                                                    <div className='free-bot__description'>
+                                                                        <Localize i18n_default_text='Quick-load XML' />
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ))
                                         ) : (
                                             <div className='free-bots__empty'>
                                                 <Localize i18n_default_text='Loading curated strategies…' />
