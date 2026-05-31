@@ -1,6 +1,5 @@
 /**
- * Free Bots Section Styles
- * Theme-aware with emerald accents
+ * Free Bots Section — Professional dark navy + electric blue palette
  */
 
 .free-bots {
@@ -10,14 +9,15 @@
     margin: 0 auto;
 
     &__heading {
-        font-size: 1.75rem;
+        font-size: 1.6rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         text-align: center;
+        letter-spacing: -0.02em;
     }
 
     &__content-wrapper {
@@ -28,32 +28,32 @@
         box-shadow: none;
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 2rem;
     }
 
     &__group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.75rem;
     }
 
     &__group-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: rgba(34, 197, 94, 0.75);
-        margin: 0;
-        padding: 0.3rem 0.5rem;
-        border-left: 3px solid #22c55e;
-        background: rgba(34, 197, 94, 0.06);
-        border-radius: 0 4px 4px 0;
+        letter-spacing: 0.12em;
+        color: #93c5fd;
+        margin: 0 0 0.25rem;
+        padding: 0.35rem 0.75rem;
+        border-left: 3px solid #3b82f6;
+        background: rgba(59, 130, 246, 0.07);
+        border-radius: 0 6px 6px 0;
     }
 
     &__content {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-        gap: 0.3rem;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.6rem;
         list-style: none;
         padding: 0;
         margin: 0;
@@ -62,7 +62,7 @@
     &__empty {
         text-align: center;
         padding: 3rem;
-        color: var(--text-secondary);
+        color: #64748b;
         font-style: italic;
     }
 }
@@ -70,137 +70,87 @@
 .free-bot {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.15rem;
-    padding: 0.25rem;
-    background: var(--general-section-1);
-    border-radius: 4px;
-    border: 1px solid var(--border-normal);
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 0.75rem 0.9rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.12);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    min-height: 45px;
+    transition: all 0.22s ease;
+    min-height: 56px;
+    backdrop-filter: blur(4px);
 
     &:hover {
-        background: var(--general-hover);
-        border-color: rgba(34, 197, 94, 0.6);
-        transform: translateY(-4px) scale(1.02);
+        background: rgba(30, 41, 59, 0.85);
+        border-color: rgba(59, 130, 246, 0.55);
+        transform: translateY(-2px);
         box-shadow:
-            0 12px 32px rgba(34, 197, 94, 0.2),
-            inset 0 1px 0 rgba(34, 197, 94, 0.1);
+            0 8px 24px rgba(59, 130, 246, 0.15),
+            0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
-    &__icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        border-radius: 4px;
-        color: white;
-        flex-shrink: 0;
-
-        svg {
-            width: 10px;
-            height: 10px;
-        }
+    &:active {
+        transform: translateY(0);
     }
 
     &__details {
         width: 100%;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
     }
 
     &__title {
-        font-size: 8px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0;
-        line-height: 1;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin: 0 0 0.2rem;
+        line-height: 1.3;
         word-break: break-word;
-        transition: all 0.3s ease;
+        transition: color 0.2s ease;
     }
 
     &:hover &__title {
-        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #93c5fd;
     }
 
     &__description {
-        font-size: 7px;
-        color: var(--text-secondary);
+        font-size: 0.6rem;
+        color: #475569;
         margin: 0;
-        line-height: 1;
         font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
     }
 }
 
-// Mobile responsive styles - 2 column grid
+/* Mobile */
 @media (max-width: 768px) {
     .free-bots {
         padding: 1rem;
 
-        &__heading {
-            font-size: 1.5rem;
-        }
+        &__heading { font-size: 1.35rem; }
 
         &__content {
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
     }
 
     .free-bot {
-        padding: 0.3rem;
-        min-height: 50px;
-        gap: 0.2rem;
+        min-height: 52px;
+        padding: 0.6rem 0.75rem;
 
-        &__icon {
-            width: 18px;
-            height: 18px;
-
-            svg {
-                width: 9px;
-                height: 9px;
-            }
-        }
-
-        &__title {
-            font-size: 9px;
-        }
-
-        &__description {
-            font-size: 7px;
-        }
+        &__title { font-size: 0.68rem; }
     }
 }
 
-// Very small screens - stack to 1 column
 @media (max-width: 380px) {
-    .free-bots__content {
-        grid-template-columns: 1fr;
-    }
+    .free-bots__content { grid-template-columns: 1fr; }
 }
 
-// Tablet - 3 columns
 @media (min-width: 769px) and (max-width: 1024px) {
-    .free-bots__content {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .free-bots__content { grid-template-columns: repeat(3, 1fr); }
 }
 
-// Desktop - more columns with smaller cards
 @media (min-width: 1025px) {
-    .free-bots__content {
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    }
+    .free-bots__content { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
 }
