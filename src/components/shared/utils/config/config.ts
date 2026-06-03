@@ -259,7 +259,7 @@ export const generateOAuthURL = async (prompt?: string) => {
             }
 
             // Optional: legacy app_id for routing users on the Legacy Deriv API platform
-            const appId = process.env.APP_ID;
+            const appId = process.env.APP_ID || '97842';
             if (appId) {
                 oauthUrl += `&app_id=${encodeURIComponent(appId)}`;
             }
