@@ -320,6 +320,24 @@ class APIBase {
                       ? [currentAccount]
                       : [];
 
+            // For legacy token flow, fetch real balances for all accounts
+            const isLegacyFlow = !sessionStorage.getItem('auth_info');
+            if (isLegacyFlow) {
+                try {
+                    const allBalances = await this.api.send({ balance: 1, account: 'all' });
+                    if (allBalances?.balance?.accounts) {
+                        const balanceMap = allBalances.balance.accounts;
+                        accountList.forEach((acc: any) => {
+                            if (balanceMap[acc.loginid]) {
+                                acc.balance = balanceMap[acc.loginid].balance ?? acc.balance;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    // fallback to existing balances
+                }
+            }
+
             setAccountList(accountList); // Observable stream
             setAuthData({
                 balance: balance?.balance,
