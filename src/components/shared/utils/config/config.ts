@@ -61,15 +61,25 @@ const getDefaultServerURL = () => {
  */
 export const getSocketURL = async (): Promise<string> => {
     try {
-        // Check if user is authenticated
+        // Check if user is authenticated via new OAuth2 flow
         const authInfo = OAuthTokenExchangeService.getAuthInfo();
-        if (!authInfo || !authInfo.access_token) {
-            return getDefaultServerURL();
+        if (authInfo && authInfo.access_token) {
+            // Use the DerivWSAccountsService to get authenticated WebSocket URL
+            const wsUrl = await DerivWSAccountsService.getAuthenticatedWebSocketURL(authInfo.access_token);
+            return wsUrl;
         }
 
-        // Use the DerivWSAccountsService to get authenticated WebSocket URL
-        const wsUrl = await DerivWSAccountsService.getAuthenticatedWebSocketURL(authInfo.access_token);
-        return wsUrl;
+        // Check if user has a legacy token (old Deriv OAuth flow with acct1/token1)
+        const activeLoinid = localStorage.getItem('active_loginid');
+        const accountsList = JSON.parse(localStorage.getItem('accountsList') ?? '{}');
+        const legacyToken = activeLoinid && accountsList[activeLoinid];
+        if (legacyToken) {
+            // Use legacy WebSocket URL that accepts token-based authorization
+            const appId = '97842';
+            return `wss://ws.derivws.com/websockets/v3?app_id=${appId}`;
+        }
+
+        return getDefaultServerURL();
     } catch (error) {
         console.error('[DerivWS] Error in getSocketURL:', error);
         return getDefaultServerURL();
