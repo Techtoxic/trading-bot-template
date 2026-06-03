@@ -387,11 +387,29 @@ export default class ClientStore {
 
                 this.all_accounts_balance = null;
 
-                localStorage.removeItem('accountsList');
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('clientAccounts');
+                // Preserve legacy tokens for account switching (old Deriv OAuth flow)
+                const savedAccountsList = localStorage.getItem('accountsList');
+                const savedClientAccounts = localStorage.getItem('clientAccounts');
+                const isLegacyFlow = !sessionStorage.getItem('auth_info') && !!savedAccountsList;
+
+                if (!isLegacyFlow) {
+                    localStorage.removeItem('accountsList');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('clientAccounts');
+                }
                 localStorage.removeItem('account_type'); // Clear account type on logout
                 removeCookies('client_information');
+
+                // Restore legacy tokens after clearing so new WS connection can use them
+                if (isLegacyFlow && savedAccountsList && savedClientAccounts) {
+                    localStorage.setItem('accountsList', savedAccountsList);
+                    localStorage.setItem('clientAccounts', savedClientAccounts);
+                    const newAccountsList = JSON.parse(savedAccountsList);
+                    const newToken = newAccountsList[active_login_id];
+                    if (newToken) {
+                        localStorage.setItem('authToken', newToken);
+                    }
+                }
 
                 setIsAuthorized(false);
                 setAccountList([]);
