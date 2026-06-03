@@ -75,7 +75,44 @@ function App() {
     // Handle account switching via URL parameter
     useAccountSwitching();
 
-    // Process the authorization code when OAuth callback is valid
+    // Handle legacy token flow (?acct1=&token1=&cur1= params from old Deriv OAuth)
+    React.useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const acct1 = urlParams.get('acct1');
+        const token1 = urlParams.get('token1');
+
+        if (acct1 && token1) {
+            // Build accounts object from URL params
+            const accounts: Record<string, string> = {};
+            const clientAccounts: Record<string, { token: string; currency: string }> = {};
+
+            let i = 1;
+            while (urlParams.get(`acct${i}`) && urlParams.get(`token${i}`)) {
+                const acct = urlParams.get(`acct${i}`) as string;
+                const token = urlParams.get(`token${i}`) as string;
+                const cur = urlParams.get(`cur${i}`) || '';
+                accounts[acct] = token;
+                clientAccounts[acct] = { token, currency: cur };
+                i++;
+            }
+
+            // Store in localStorage (same format the app expects)
+            localStorage.setItem('accountsList', JSON.stringify(accounts));
+            localStorage.setItem('clientAccounts', JSON.stringify(clientAccounts));
+            localStorage.setItem('authToken', token1);
+            localStorage.setItem('active_loginid', acct1);
+            localStorage.setItem('account_type', acct1.startsWith('VR') ? 'demo' : 'real');
+
+            // Clean up URL params
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+
+            // Reload to initialize the app with the new accounts
+            window.location.reload();
+        }
+    }, []);
+
+    // Process the authorization code when OAuth callback is valid (new flow)
     React.useEffect(() => {
         if (!isProcessing && isValid && params.code) {
             // Exchange authorization code for access token
@@ -86,13 +123,11 @@ function App() {
                     } else if (response.error) {
                         console.error('❌ Token exchange failed:', response.error);
                         console.error('Error description:', response.error_description);
-                        // Clean up URL even on error
                         cleanupURL();
                     }
                 })
                 .catch(error => {
                     console.error('❌ Token exchange request failed:', error);
-                    // Clean up URL even on error
                     cleanupURL();
                 });
         } else if (!isProcessing && error) {
