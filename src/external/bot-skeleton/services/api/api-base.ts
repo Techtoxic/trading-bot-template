@@ -265,7 +265,7 @@ class APIBase {
                 const legacyToken = accountsList[this.account_id];
                 if (legacyToken) {
                     try {
-                        await this.api.authorize({ authorize: legacyToken });
+                        await this.api.authorize(legacyToken);
                     } catch (authError) {
                         console.warn('[APIBase] Legacy authorize failed:', authError);
                     }
