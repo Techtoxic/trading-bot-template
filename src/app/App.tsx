@@ -85,6 +85,7 @@ function App() {
             // Build accounts object from URL params
             const accounts: Record<string, string> = {};
             const clientAccounts: Record<string, { token: string; currency: string }> = {};
+            const derivAccounts: Array<{ account_id: string; token: string; currency: string; balance: string; status: string }> = [];
 
             let i = 1;
             while (urlParams.get(`acct${i}`) && urlParams.get(`token${i}`)) {
@@ -93,15 +94,23 @@ function App() {
                 const cur = urlParams.get(`cur${i}`) || '';
                 accounts[acct] = token;
                 clientAccounts[acct] = { token, currency: cur };
+                derivAccounts.push({ account_id: acct, token, currency: cur, balance: '0', status: 'active' });
                 i++;
             }
 
-            // Store in localStorage (same format the app expects)
+            // Store in localStorage
             localStorage.setItem('accountsList', JSON.stringify(accounts));
             localStorage.setItem('clientAccounts', JSON.stringify(clientAccounts));
             localStorage.setItem('authToken', token1);
             localStorage.setItem('active_loginid', acct1);
             localStorage.setItem('account_type', acct1.startsWith('VR') ? 'demo' : 'real');
+
+            // Store in sessionStorage so the new WebSocket layer can find accounts
+            sessionStorage.setItem('deriv_accounts', JSON.stringify(derivAccounts));
+
+            // Store a legacy auth_info so getSocketURL falls back gracefully
+            // The WebSocket will use the legacy token via accountsList[active_loginid]
+            sessionStorage.removeItem('auth_info');
 
             // Clean up URL params
             const cleanUrl = window.location.origin + window.location.pathname;

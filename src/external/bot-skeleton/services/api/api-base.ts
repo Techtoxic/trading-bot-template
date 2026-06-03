@@ -258,6 +258,20 @@ class APIBase {
         setIsAuthorizing(true);
 
         try {
+            // For legacy token flow (no auth_info in sessionStorage), authorize first
+            const authInfo = sessionStorage.getItem('auth_info');
+            if (!authInfo && this.account_id) {
+                const accountsList = JSON.parse(localStorage.getItem('accountsList') ?? '{}');
+                const legacyToken = accountsList[this.account_id];
+                if (legacyToken) {
+                    try {
+                        await this.api.authorize({ authorize: legacyToken });
+                    } catch (authError) {
+                        console.warn('[APIBase] Legacy authorize failed:', authError);
+                    }
+                }
+            }
+
             const { balance, error } = await this.api.balance();
 
             if (error) {
