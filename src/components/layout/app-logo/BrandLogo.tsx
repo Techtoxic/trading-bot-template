@@ -36,7 +36,7 @@ export const BrandLogo = ({
                 fill={fill}
                 letterSpacing="0.5"
             >
-                MAXBOTS
+                THE BAG.SITE
             </text>
         </svg>
     );
