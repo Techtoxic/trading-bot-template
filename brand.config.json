@@ -1,9 +1,9 @@
 {
     "brand_name": "MAXBOTS",
-    "brand_domain": "dbotke.netlify.app",
+    "brand_domain": "thebagg.site",
     "brand_hostname": {
         "staging": "staging.yourbrand.com/dashboard",
-        "production": "dbotke.netlify.app"
+        "production": "thebagg.site"
     },
     "domain_name": "YourBrand.com",
     "colors": {
@@ -73,7 +73,7 @@
         },
         "hostname": {
             "production": {
-                "com": "dbotke.netlify.app"
+                "com": "thebagg.site"
             },
             "staging": {
                 "com": "staging-bot.yourbrand.com"
