@@ -58,8 +58,8 @@
                 background: var(--general-section-1);
                 color: var(--text-prominent);
                 font-weight: 600;
-                border: 1px solid var(--green);
-                border-top: 2px solid var(--green);
+                border: 1px solid var(--brand-red-coral);
+                border-top: 2px solid var(--brand-red-coral);
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
                 border-bottom-left-radius: 6px;
@@ -159,7 +159,7 @@
                 font-size: 11px;
                 font-weight: 500;
                 background: var(--general-section-2);
-                border: 1px solid var(--border-normal);
+                border: 1px solid rgba(16, 185, 129, 0.35);
                 margin-right: 2px;
                 transition: all 0.2s ease;
                 position: relative;
@@ -169,6 +169,7 @@
                 &:hover {
                     background: var(--general-hover);
                     color: var(--text-prominent);
+                    border-color: var(--brand-red-coral);
                 }
 
                 svg {
