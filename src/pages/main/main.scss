@@ -54,12 +54,12 @@
                 display: none;
             }
 
-            &__active {
-                background: var(--general-section-1);
-                color: var(--text-prominent);
-                font-weight: 600;
-                border: 1px solid var(--brand-red-coral);
-                border-top: 2px solid var(--brand-red-coral);
+            &__item.dc-tabs__active {
+                background: #ffffff;
+                color: $color-green-4;
+                font-weight: 700;
+                border: 1px solid $color-green-3;
+                border-top: 2px solid $color-green-3;
                 border-top-left-radius: 6px;
                 border-top-right-radius: 6px;
                 border-bottom-left-radius: 6px;
@@ -155,11 +155,11 @@
                 padding: 0.3rem 0.6rem;
                 width: auto;
                 min-width: auto;
-                color: var(--text-general);
+                color: #ffffff;
                 font-size: 11px;
                 font-weight: 500;
-                background: var(--general-section-2);
-                border: 1px solid rgba(16, 185, 129, 0.35);
+                background: $color-green-4;
+                border: 1px solid $color-green-4;
                 margin-right: 2px;
                 transition: all 0.2s ease;
                 position: relative;
@@ -167,9 +167,9 @@
                 @include flex-center;
 
                 &:hover {
-                    background: var(--general-hover);
-                    color: var(--text-prominent);
-                    border-color: var(--brand-red-coral);
+                    background: $color-green-3;
+                    color: #ffffff;
+                    border-color: $color-green-3;
                 }
 
                 svg {
