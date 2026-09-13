@@ -100,6 +100,8 @@ $alpha-color-red-3: color.scale($color-red, $alpha: -76%);
 $alpha-color-green-1: color.scale($color-green-1, $alpha: -8%);
 $alpha-color-green-2: color.scale($color-green-3, $alpha: -8%);
 $alpha-color-green-3: color.scale($color-green-3, $alpha: -76%);
+$alpha-color-green-pale-1: color.scale($color-green-3, $alpha: -92%);
+$alpha-color-green-pale-2: color.scale($color-green-3, $alpha: -84%);
 $alpha-color-yellow-1: color.scale($color-yellow, $alpha: -84%);
 
 /* gradient colors */
