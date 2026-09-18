@@ -229,6 +229,7 @@ const BotIcon: React.FC = () => (
 
 const ChartWrapper = lazy(() => import('../chart/chart-wrapper'));
 const Tutorial = lazy(() => import('../tutorials'));
+const AnalysisTool = lazy(() => import('../analysis-tool/analysis-tool'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus, isAuthorized, isAuthorizing } = useApiBase();
@@ -859,14 +860,11 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-analysis-tool'
                             >
-                                <div className='placeholder-panel'>
-                                    <h3>
-                                        <Localize i18n_default_text='Analysis Hub' />
-                                    </h3>
-                                    <p>
-                                        <Localize i18n_default_text='Deep dive performance dashboards and metrics will land here shortly.' />
-                                    </p>
-                                </div>
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading analysis tool...')} />}
+                                >
+                                    <AnalysisTool />
+                                </Suspense>
                             </div>
                             <div
                                 label={
