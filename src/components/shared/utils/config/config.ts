@@ -17,6 +17,14 @@ export const STAGING_DOMAINS = {
 } as const;
 
 // WebSocket server URLs
+// NOTE: brand.config.json's derivws.url.staging intentionally points at the
+// same host as .production (https://api.derivws.com). Per Deriv's own docs
+// (developers.deriv.com/docs/options/websocket/), the Options API's public
+// WebSocket endpoint has no staging/demo variant at the host level — demo
+// vs real trading is selected via account/path, not a different server. A
+// "staging-api.derivws.com" host was previously configured here but is not
+// a real Deriv endpoint; it 403s at the WS handshake. Do not reintroduce a
+// separate staging host without first confirming it in Deriv's docs.
 export const WS_SERVERS = {
     STAGING: `${brandConfig.platform.derivws.url.staging}options/ws/public`,
     PRODUCTION: `${brandConfig.platform.derivws.url.production}options/ws/public`,
@@ -232,7 +240,13 @@ export const clearCSRFToken = (): void => {
 
 export const generateOAuthURL = async (prompt?: string) => {
     try {
-        // Use brand config for login URLs
+        // Use brand config for login URLs.
+        // NOTE: brand.config.json's auth2_url.staging intentionally points at
+        // the same host as .production (https://auth.deriv.com). Per Deriv's
+        // docs (developers.deriv.com/docs/intro/oauth/), only one OAuth2 host
+        // is documented — there is no separate staging/sandbox auth host. A
+        // guessed "staging-auth.deriv.com" was previously configured here
+        // but isn't real; don't reintroduce it without confirming in docs.
         const environment = isProduction() ? 'production' : 'staging';
         const hostname = brandConfig?.platform.auth2_url?.[environment];
         const clientId = '33fkQaqUK4Drz5HopZ1Aj';

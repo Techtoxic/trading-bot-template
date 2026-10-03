@@ -1,0 +1,73 @@
+diff --git a/brand.config.json b/brand.config.json
+index 884b8f6..63ff0ae 100644
+--- a/brand.config.json
++++ b/brand.config.json
+@@ -1,9 +1,9 @@
+ {
+     "brand_name": "MAXBOTS",
+-    "brand_domain": "thebagg.site",
++    "brand_domain": "theebagg.site",
+     "brand_hostname": {
+         "staging": "staging.yourbrand.com/dashboard",
+-        "production": "thebagg.site"
++        "production": "theebagg.site"
+     },
+     "domain_name": "YourBrand.com",
+     "colors": {
+@@ -73,7 +73,7 @@
+         },
+         "hostname": {
+             "production": {
+-                "com": "thebagg.site"
++                "com": "theebagg.site"
+             },
+             "staging": {
+                 "com": "staging-bot.yourbrand.com"
+@@ -81,11 +81,11 @@
+         },
+         "auth2_url": {
+             "production": "https://auth.deriv.com/oauth2/",
+-            "staging": "https://staging-auth.deriv.com/oauth2/"
++            "staging": "https://auth.deriv.com/oauth2/"
+         },
+         "derivws": {
+             "url": {
+-                "staging": "https://staging-api.derivws.com/trading/v1/",
++                "staging": "https://api.derivws.com/trading/v1/",
+                 "production": "https://api.derivws.com/trading/v1/"
+             },
+             "directories": {
+diff --git a/src/components/shared/utils/config/config.ts b/src/components/shared/utils/config/config.ts
+index 314e884..2de8cf5 100644
+--- a/src/components/shared/utils/config/config.ts
++++ b/src/components/shared/utils/config/config.ts
+@@ -17,6 +17,14 @@ export const STAGING_DOMAINS = {
+ } as const;
+ 
+ // WebSocket server URLs
++// NOTE: brand.config.json's derivws.url.staging intentionally points at the
++// same host as .production (https://api.derivws.com). Per Deriv's own docs
++// (developers.deriv.com/docs/options/websocket/), the Options API's public
++// WebSocket endpoint has no staging/demo variant at the host level — demo
++// vs real trading is selected via account/path, not a different server. A
++// "staging-api.derivws.com" host was previously configured here but is not
++// a real Deriv endpoint; it 403s at the WS handshake. Do not reintroduce a
++// separate staging host without first confirming it in Deriv's docs.
+ export const WS_SERVERS = {
+     STAGING: `${brandConfig.platform.derivws.url.staging}options/ws/public`,
+     PRODUCTION: `${brandConfig.platform.derivws.url.production}options/ws/public`,
+@@ -232,7 +240,13 @@ export const clearCSRFToken = (): void => {
+ 
+ export const generateOAuthURL = async (prompt?: string) => {
+     try {
+-        // Use brand config for login URLs
++        // Use brand config for login URLs.
++        // NOTE: brand.config.json's auth2_url.staging intentionally points at
++        // the same host as .production (https://auth.deriv.com). Per Deriv's
++        // docs (developers.deriv.com/docs/intro/oauth/), only one OAuth2 host
++        // is documented — there is no separate staging/sandbox auth host. A
++        // guessed "staging-auth.deriv.com" was previously configured here
++        // but isn't real; don't reintroduce it without confirming in docs.
+         const environment = isProduction() ? 'production' : 'staging';
+         const hostname = brandConfig?.platform.auth2_url?.[environment];
+         const clientId = '33fkQaqUK4Drz5HopZ1Aj';
