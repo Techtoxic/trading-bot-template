@@ -36,6 +36,7 @@ import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import RunStrategy from '../dashboard/run-strategy';
+import WelcomeScreen from './welcome-screen';
 import './bulk-trading.scss';
 import './copy-trading.css';
 import './free-bots.scss';
@@ -271,6 +272,7 @@ const AppWrapper = observer(() => {
     const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
     const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
     const [botGroups, setBotGroups] = useState<TBotGroup[]>([]);
+    const [isWelcomeVisible, setIsWelcomeVisible] = useState(true);
     type TCopyEntry = { id: number; token: string; label: string; active: boolean; status: { type: 'success' | 'error' | 'info'; message: string } | null };
     const [copyEntries, setCopyEntries] = useState<TCopyEntry[]>([{ id: 1, token: '', label: '', active: false, status: null }]);
     const nextIdRef = React.useRef(2);
@@ -712,6 +714,10 @@ const AppWrapper = observer(() => {
         }
     };
     // [/AI]
+    if (isWelcomeVisible) {
+        return <WelcomeScreen onContinue={() => setIsWelcomeVisible(false)} />;
+    }
+
     return (
         <React.Fragment>
             <div className='main'>

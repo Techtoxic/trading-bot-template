@@ -63,6 +63,7 @@ const AnalysisTool: React.FC = () => {
     const [symbol, setSymbol] = useState('1HZ100V');
     const [marketOptions, setMarketOptions] = useState(DEFAULT_DIGIT_SYMBOLS);
     const [tickCount, setTickCount] = useState(DEFAULT_TICK_COUNT);
+    const [analyzedTickCount, setAnalyzedTickCount] = useState(DEFAULT_TICK_COUNT);
     const [ticks, setTicks] = useState<TTick[]>([]);
     const [selectedDigit, setSelectedDigit] = useState<number | null>(null);
     const [tradeMode, setTradeMode] = useState<'matches' | 'differs'>('matches');
@@ -95,6 +96,8 @@ const AnalysisTool: React.FC = () => {
         setIsLoading(true);
         setErrorMessage(null);
         forgetCurrentSubscription();
+        const requestedTickCount = tickCountRef.current;
+        setAnalyzedTickCount(requestedTickCount);
 
         // Resolve pip size for correct digit extraction (see lastDigitOf).
         // api_base.pip_sizes is populated from active_symbols once connected.
@@ -107,7 +110,7 @@ const AnalysisTool: React.FC = () => {
             const response = await api.send({
                 ticks_history: target_symbol,
                 adjust_start_time: 1,
-                count: tickCountRef.current,
+                count: requestedTickCount,
                 end: 'latest',
                 start: 1,
                 style: 'ticks',
@@ -137,7 +140,7 @@ const AnalysisTool: React.FC = () => {
             }));
 
             subscriptionIdRef.current = response?.subscription?.id ?? null;
-            setTicks(history_ticks.slice(-tickCountRef.current));
+            setTicks(history_ticks.slice(-requestedTickCount));
             setIsLoading(false);
         } catch (error: any) {
             if (symbolRef.current !== target_symbol) return;
@@ -254,6 +257,15 @@ const AnalysisTool: React.FC = () => {
                     />
                 </label>
 
+                <button
+                    type='button'
+                    className='analysis-tool__analyze-button'
+                    onClick={() => requestTickHistory(symbol)}
+                    disabled={isLoading}
+                >
+                    <Localize i18n_default_text='Analyze ticks' />
+                </button>
+
                 <div className='analysis-tool__toggle'>
                     <button
                         type='button'
@@ -280,7 +292,7 @@ const AnalysisTool: React.FC = () => {
                         <span>
                             <Localize
                                 i18n_default_text='{{count}}/{{window}} ticks analyzed'
-                                values={{ count: total, window: tickCount }}
+                                values={{ count: total, window: analyzedTickCount }}
                             />
                         </span>
                         {lastTick && (

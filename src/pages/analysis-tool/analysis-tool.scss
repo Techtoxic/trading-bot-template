@@ -45,14 +45,33 @@
     }
 
     &__symbol-select {
-        flex: 1;
-        min-width: 200px;
+        flex: 1 1 280px;
+        min-width: 0;
+        max-width: 360px;
         padding: 0.8rem 1.2rem;
         border-radius: 8px;
         border: 1px solid var(--border-normal);
         background: var(--general-section-1);
         color: var(--text-general);
         font-size: 1.3rem;
+    }
+
+    &__analyze-button {
+        align-self: end;
+        min-height: 4.2rem;
+        padding: 0.8rem 1.6rem;
+        border: none;
+        border-radius: 8px;
+        background: var(--brand-primary, #00a79e);
+        color: #ffffff;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.55;
+        }
     }
 
     &__toggle {
