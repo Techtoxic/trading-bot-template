@@ -14,6 +14,10 @@ const DEFAULT_DIGIT_SYMBOLS: { value: string; label: string }[] = [
     { value: '1HZ50V', label: 'Volatility 50 (1s) Index' },
     { value: '1HZ75V', label: 'Volatility 75 (1s) Index' },
     { value: '1HZ100V', label: 'Volatility 100 (1s) Index' },
+    { value: '1HZ150V', label: 'Volatility 150 (1s) Index' },
+    { value: '1HZ200V', label: 'Volatility 200 (1s) Index' },
+    { value: '1HZ250V', label: 'Volatility 250 (1s) Index' },
+    { value: '1HZ300V', label: 'Volatility 300 (1s) Index' },
     { value: 'R_10', label: 'Volatility 10 Index' },
     { value: 'R_25', label: 'Volatility 25 Index' },
     { value: 'R_50', label: 'Volatility 50 Index' },
@@ -63,12 +67,14 @@ const AnalysisTool: React.FC = () => {
     const [symbol, setSymbol] = useState('1HZ100V');
     const [marketOptions, setMarketOptions] = useState(DEFAULT_DIGIT_SYMBOLS);
     const [tickCount, setTickCount] = useState(DEFAULT_TICK_COUNT);
+    const [tickCountInput, setTickCountInput] = useState(String(DEFAULT_TICK_COUNT));
     const [analyzedTickCount, setAnalyzedTickCount] = useState(DEFAULT_TICK_COUNT);
     const [ticks, setTicks] = useState<TTick[]>([]);
     const [selectedDigit, setSelectedDigit] = useState<number | null>(null);
     const [tradeMode, setTradeMode] = useState<'matches' | 'differs'>('matches');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isLoadingMarkets, setIsLoadingMarkets] = useState(false);
 
     // Refs so the persistent onMessage listener always sees current values
     // without needing to be torn down/recreated on every state change.
@@ -77,6 +83,12 @@ const AnalysisTool: React.FC = () => {
     const pipSizeRef = useRef(DEFAULT_PIP_SIZE);
     const tickCountRef = useRef(DEFAULT_TICK_COUNT);
     tickCountRef.current = tickCount;
+
+    const clampTickCount = (value: string): number => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_TICK_COUNT;
+        return Math.min(MAX_TICK_COUNT, Math.max(MIN_TICK_COUNT, Math.round(parsed)));
+    };
 
     const forgetCurrentSubscription = useCallback(() => {
         const id = subscriptionIdRef.current;
@@ -154,6 +166,7 @@ const AnalysisTool: React.FC = () => {
         const api = getApi();
         if (connectionStatus !== CONNECTION_STATUS.OPENED || !api) return;
 
+        setIsLoadingMarkets(true);
         api.send({ active_symbols: 'brief', product_type: 'basic' })
             .then(response => {
                 const markets = (response.active_symbols ?? [])
@@ -164,11 +177,21 @@ const AnalysisTool: React.FC = () => {
                 if (!markets.length) return;
                 setMarketOptions(markets);
                 setSymbol(current => (markets.some(item => item.value === current) ? current : markets[0].value));
+                setIsLoadingMarkets(false);
             })
             .catch(() => {
                 // Keep the curated fallback list if active_symbols is unavailable.
+                setIsLoadingMarkets(false);
             });
     }, [connectionStatus]);
+
+    const handleAnalyze = () => {
+        const normalizedCount = clampTickCount(tickCountInput);
+        setTickCountInput(String(normalizedCount));
+        setTickCount(normalizedCount);
+        tickCountRef.current = normalizedCount;
+        requestTickHistory(symbol);
+    };
 
     // (Re)subscribe whenever the symbol changes or the socket (re)connects.
     useEffect(() => {
@@ -226,18 +249,24 @@ const AnalysisTool: React.FC = () => {
             </div>
 
             <div className='analysis-tool__controls'>
-                <select
-                    className='analysis-tool__symbol-select'
-                    value={symbol}
-                    onChange={e => setSymbol(e.target.value)}
-                    aria-label={localize('Market')}
-                >
-                    {marketOptions.map(item => (
-                        <option key={item.value} value={item.value}>
-                            {item.label}
-                        </option>
-                    ))}
-                </select>
+                <label className='analysis-tool__market-select'>
+                    <span>
+                        <Localize i18n_default_text='Volatility market' /> ({marketOptions.length})
+                    </span>
+                    <select
+                        className='analysis-tool__symbol-select'
+                        value={symbol}
+                        onChange={e => setSymbol(e.target.value)}
+                        aria-label={localize('Volatility market')}
+                    >
+                        {marketOptions.map(item => (
+                            <option key={item.value} value={item.value}>
+                                {item.label}
+                            </option>
+                        ))}
+                    </select>
+                    {isLoadingMarkets && <small><Localize i18n_default_text='Loading markets…' /></small>}
+                </label>
 
                 <label className='analysis-tool__tick-count'>
                     <span><Localize i18n_default_text='Ticks to analyze' /></span>
@@ -246,12 +275,12 @@ const AnalysisTool: React.FC = () => {
                         min={MIN_TICK_COUNT}
                         max={MAX_TICK_COUNT}
                         step='50'
-                        value={tickCount}
-                        onChange={event => {
-                            const nextCount = Number(event.target.value);
-                            if (Number.isFinite(nextCount)) {
-                                setTickCount(Math.min(MAX_TICK_COUNT, Math.max(MIN_TICK_COUNT, nextCount)));
-                            }
+                        value={tickCountInput}
+                        onChange={event => setTickCountInput(event.target.value)}
+                        onBlur={() => {
+                            const normalizedCount = clampTickCount(tickCountInput);
+                            setTickCountInput(String(normalizedCount));
+                            setTickCount(normalizedCount);
                         }}
                         aria-label={localize('Ticks to analyze')}
                     />
@@ -260,7 +289,7 @@ const AnalysisTool: React.FC = () => {
                 <button
                     type='button'
                     className='analysis-tool__analyze-button'
-                    onClick={() => requestTickHistory(symbol)}
+                    onClick={handleAnalyze}
                     disabled={isLoading}
                 >
                     <Localize i18n_default_text='Analyze ticks' />

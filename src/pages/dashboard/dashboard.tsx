@@ -7,7 +7,6 @@ import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import Announcements from './announcements';
 import Cards from './cards';
-import InfoPanel from './info-panel';
 
 type TMobileIconGuide = {
     handleTabChange: (active_number: number) => void;
@@ -63,7 +62,6 @@ const DashboardComponent = observer(({ handleTabChange }: TMobileIconGuide) => {
                     </div>
                 </div>
             </div>
-            <InfoPanel />
         </React.Fragment>
     );
 });

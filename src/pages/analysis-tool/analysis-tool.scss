@@ -44,10 +44,26 @@
         }
     }
 
-    &__symbol-select {
+    &__market-select {
+        display: flex;
         flex: 1 1 280px;
+        flex-direction: column;
+        gap: 0.4rem;
         min-width: 0;
         max-width: 360px;
+        color: var(--text-less-prominent);
+        font-size: 1rem;
+        font-weight: 600;
+
+        small {
+            color: var(--brand-primary, #00a79e);
+            font-size: 0.85rem;
+        }
+    }
+
+    &__symbol-select {
+        min-width: 0;
+        width: 100%;
         padding: 0.8rem 1.2rem;
         border-radius: 8px;
         border: 1px solid var(--border-normal);

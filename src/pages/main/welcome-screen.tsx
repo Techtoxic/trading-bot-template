@@ -14,6 +14,20 @@ const WelcomeScreen: React.FC<TWelcomeScreenProps> = ({ onContinue }) => (
             <p>
                 <Localize i18n_default_text='Your all-in-one workspace for automated trading, smart bots, and real-time market insights.' />
             </p>
+            <div className='welcome-screen__features'>
+                <div>
+                    <strong>24/7</strong>
+                    <span><Localize i18n_default_text='Synthetic markets' /></span>
+                </div>
+                <div>
+                    <strong>NO-CODE</strong>
+                    <span><Localize i18n_default_text='Bot building' /></span>
+                </div>
+                <div>
+                    <strong>LIVE</strong>
+                    <span><Localize i18n_default_text='Tick analysis' /></span>
+                </div>
+            </div>
             <button type='button' className='welcome-screen__continue' onClick={onContinue}>
                 <Localize i18n_default_text='Enter The Bag' />
                 <span aria-hidden='true'>-&gt;</span>
