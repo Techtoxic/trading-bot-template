@@ -33,6 +33,15 @@ const DashboardComponent = observer(({ handleTabChange }: TMobileIconGuide) => {
                         <Announcements is_mobile={!isDesktop} is_tablet={isTablet} handleTabChange={handleTabChange} />
                     )}
                     <div className='quick-panel'>
+                        <section className='welcome-banner' aria-label={localize('Welcome to theebagg.site')}>
+                            <span className='welcome-banner__eyebrow'>{localize('THEEBAGG.SITE')}</span>
+                            <h1>{localize('Welcome to the bag.')}</h1>
+                            <p>
+                                {localize(
+                                    'Build sharper bots, explore curated strategies, and make your next move with confidence.'
+                                )}
+                            </p>
+                        </section>
                         <div
                             className={classNames('tab__dashboard__header', {
                                 'tab__dashboard__header--listed': isDesktop && has_dashboard_strategies,

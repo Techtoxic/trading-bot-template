@@ -193,6 +193,48 @@
                 flex: 1 1 44%;
             }
 
+            .welcome-banner {
+                margin-bottom: 2.4rem;
+                padding: 2rem 2.4rem;
+                border: 1px solid rgb(0 167 158 / 28%);
+                border-left: 4px solid var(--brand-primary, #00a79e);
+                background: linear-gradient(120deg, rgb(0 167 158 / 12%), rgb(255 255 255 / 72%));
+                border-radius: 0.8rem;
+
+                &__eyebrow {
+                    display: block;
+                    color: var(--brand-primary, #00a79e);
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    letter-spacing: 0.14em;
+                }
+
+                h1 {
+                    margin: 0.6rem 0 0.4rem;
+                    color: var(--text-general);
+                    font-family: var(--brand-font-secondary, Georgia, 'Times New Roman', serif);
+                    font-size: clamp(2rem, 3vw, 3.2rem);
+                    line-height: 1.05;
+                }
+
+                p {
+                    max-width: 52rem;
+                    margin: 0;
+                    color: var(--text-general);
+                    font-size: 1rem;
+                    line-height: 1.5;
+                }
+
+                @include mobile-or-tablet-screen {
+                    margin-bottom: 1.6rem;
+                    padding: 1.6rem;
+
+                    h1 {
+                        font-size: 2rem;
+                    }
+                }
+            }
+
             .preview-panel {
                 display: none;
                 flex: 1 1 56%;

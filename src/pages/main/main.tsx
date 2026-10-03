@@ -60,16 +60,6 @@ const BOT_GROUPS: { label: string; files: string[] }[] = [
         ],
     },
     {
-        label: 'Accumulators',
-        files: [
-            'Accumulators_.xml',
-            'Accumulators_stat.xml',
-            'ACCUMULATORS_WITH_MATINGALE.xml',
-            'ACCUMULATORS__STATS_BOT.xml',
-            'ACCUMULATORS__STATS_BOT_AND_RSI.xml',
-        ],
-    },
-    {
         label: 'Differs',
         files: [
             'diff_v3.xml',
