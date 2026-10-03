@@ -249,7 +249,7 @@ export const generateOAuthURL = async (prompt?: string) => {
         // but isn't real; don't reintroduce it without confirming in docs.
         const environment = isProduction() ? 'production' : 'staging';
         const hostname = brandConfig?.platform.auth2_url?.[environment];
-        const clientId = '33fkQaqUK4Drz5HopZ1Aj';
+        const clientId = '34iyPrjO2DiW7I7WDjB2B';
 
         if (hostname && clientId) {
             // Generate CSRF token for security

@@ -133,7 +133,7 @@ export class OAuthTokenExchangeService {
             // - client_id: your OAuth2 client ID
             // - code_verifier: the PKCE code verifier (proves we initiated the auth flow)
 
-            const clientId = '33fkQaqUK4Drz5HopZ1Aj';
+            const clientId = '34iyPrjO2DiW7I7WDjB2B';
 
             const protocol = window.location.protocol;
             const host = window.location.host;
