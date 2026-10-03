@@ -14,10 +14,9 @@ const DEFAULT_DIGIT_SYMBOLS: { value: string; label: string }[] = [
     { value: '1HZ50V', label: 'Volatility 50 (1s) Index' },
     { value: '1HZ75V', label: 'Volatility 75 (1s) Index' },
     { value: '1HZ100V', label: 'Volatility 100 (1s) Index' },
-    { value: '1HZ150V', label: 'Volatility 150 (1s) Index' },
-    { value: '1HZ200V', label: 'Volatility 200 (1s) Index' },
-    { value: '1HZ250V', label: 'Volatility 250 (1s) Index' },
-    { value: '1HZ300V', label: 'Volatility 300 (1s) Index' },
+    { value: '1HZ15V', label: 'Volatility 15 (1s) Index' },
+    { value: '1HZ30V', label: 'Volatility 30 (1s) Index' },
+    { value: '1HZ90V', label: 'Volatility 90 (1s) Index' },
     { value: 'R_10', label: 'Volatility 10 Index' },
     { value: 'R_25', label: 'Volatility 25 Index' },
     { value: 'R_50', label: 'Volatility 50 Index' },
@@ -41,7 +40,11 @@ type TDerivApiResponse = {
     error?: { code?: string; message?: string };
     subscription?: { id: string };
     history?: { prices: number[]; times: number[] };
-    active_symbols?: Array<{ symbol?: string; display_name?: string }>;
+    active_symbols?: Array<{
+        underlying_symbol?: string;
+        underlying_symbol_name?: string;
+        pip_size?: number;
+    }>;
 };
 type TDerivApi = {
     send: (request: Record<string, unknown>) => Promise<TDerivApiResponse>;
@@ -167,11 +170,14 @@ const AnalysisTool: React.FC = () => {
         if (connectionStatus !== CONNECTION_STATUS.OPENED || !api) return;
 
         setIsLoadingMarkets(true);
-        api.send({ active_symbols: 'brief', product_type: 'basic' })
+        api.send({ active_symbols: 'brief' })
             .then(response => {
                 const markets = (response.active_symbols ?? [])
-                    .filter(item => item.symbol && /^Volatility\s+\d+/i.test(item.display_name ?? ''))
-                    .map(item => ({ value: item.symbol as string, label: item.display_name as string }))
+                    .filter(item => item.underlying_symbol && /^Volatility\s+\d+/i.test(item.underlying_symbol_name ?? ''))
+                    .map(item => ({
+                        value: item.underlying_symbol as string,
+                        label: item.underlying_symbol_name as string,
+                    }))
                     .sort((left, right) => left.label.localeCompare(right.label, undefined, { numeric: true }));
 
                 if (!markets.length) return;
