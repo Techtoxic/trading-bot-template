@@ -8,7 +8,7 @@ import './analysis-tool.scss';
 // Curated list of synthetic indices that support digit-based contracts
 // (Matches/Differs, Over/Under, Even/Odd). Values are Deriv's underlying
 // symbol codes; labels mirror developers.deriv.com/docs active_symbols names.
-const DIGIT_SYMBOLS: { value: string; label: string }[] = [
+const DEFAULT_DIGIT_SYMBOLS: { value: string; label: string }[] = [
     { value: '1HZ10V', label: 'Volatility 10 (1s) Index' },
     { value: '1HZ25V', label: 'Volatility 25 (1s) Index' },
     { value: '1HZ50V', label: 'Volatility 50 (1s) Index' },
@@ -21,7 +21,9 @@ const DIGIT_SYMBOLS: { value: string; label: string }[] = [
     { value: 'R_100', label: 'Volatility 100 Index' },
 ];
 
-const TICK_WINDOW = 500;
+const DEFAULT_TICK_COUNT = 500;
+const MIN_TICK_COUNT = 50;
+const MAX_TICK_COUNT = 5000;
 const DEFAULT_PIP_SIZE = 2;
 
 type TTick = { epoch: number; quote: number };
@@ -35,6 +37,7 @@ type TDerivApiResponse = {
     error?: { code?: string; message?: string };
     subscription?: { id: string };
     history?: { prices: number[]; times: number[] };
+    active_symbols?: Array<{ symbol?: string; display_name?: string }>;
 };
 type TDerivApi = {
     send: (request: Record<string, unknown>) => Promise<TDerivApiResponse>;
@@ -58,6 +61,8 @@ const lastDigitOf = (quote: number, pip_size: number): number => {
 const AnalysisTool: React.FC = () => {
     const { connectionStatus } = useApiBase();
     const [symbol, setSymbol] = useState('1HZ100V');
+    const [marketOptions, setMarketOptions] = useState(DEFAULT_DIGIT_SYMBOLS);
+    const [tickCount, setTickCount] = useState(DEFAULT_TICK_COUNT);
     const [ticks, setTicks] = useState<TTick[]>([]);
     const [selectedDigit, setSelectedDigit] = useState<number | null>(null);
     const [tradeMode, setTradeMode] = useState<'matches' | 'differs'>('matches');
@@ -69,6 +74,8 @@ const AnalysisTool: React.FC = () => {
     const subscriptionIdRef = useRef<string | null>(null);
     const symbolRef = useRef(symbol);
     const pipSizeRef = useRef(DEFAULT_PIP_SIZE);
+    const tickCountRef = useRef(DEFAULT_TICK_COUNT);
+    tickCountRef.current = tickCount;
 
     const forgetCurrentSubscription = useCallback(() => {
         const id = subscriptionIdRef.current;
@@ -96,12 +103,11 @@ const AnalysisTool: React.FC = () => {
         pipSizeRef.current = pip_size;
 
         try {
-            // Per developers.deriv.com/docs/websockets ticks_history call:
-            // request the last 500 ticks and stay subscribed for live updates.
+            // ticks_history accepts a caller-selected count and can stay subscribed for live updates.
             const response = await api.send({
                 ticks_history: target_symbol,
                 adjust_start_time: 1,
-                count: TICK_WINDOW,
+                count: tickCountRef.current,
                 end: 'latest',
                 start: 1,
                 style: 'ticks',
@@ -131,7 +137,7 @@ const AnalysisTool: React.FC = () => {
             }));
 
             subscriptionIdRef.current = response?.subscription?.id ?? null;
-            setTicks(history_ticks.slice(-TICK_WINDOW));
+            setTicks(history_ticks.slice(-tickCountRef.current));
             setIsLoading(false);
         } catch (error: any) {
             if (symbolRef.current !== target_symbol) return;
@@ -139,6 +145,27 @@ const AnalysisTool: React.FC = () => {
             setIsLoading(false);
         }
     }, [forgetCurrentSubscription]);
+
+    // Load the current Volatility catalogue so newly added markets appear without a code update.
+    useEffect(() => {
+        const api = getApi();
+        if (connectionStatus !== CONNECTION_STATUS.OPENED || !api) return;
+
+        api.send({ active_symbols: 'brief', product_type: 'basic' })
+            .then(response => {
+                const markets = (response.active_symbols ?? [])
+                    .filter(item => item.symbol && /^Volatility\s+\d+/i.test(item.display_name ?? ''))
+                    .map(item => ({ value: item.symbol as string, label: item.display_name as string }))
+                    .sort((left, right) => left.label.localeCompare(right.label, undefined, { numeric: true }));
+
+                if (!markets.length) return;
+                setMarketOptions(markets);
+                setSymbol(current => (markets.some(item => item.value === current) ? current : markets[0].value));
+            })
+            .catch(() => {
+                // Keep the curated fallback list if active_symbols is unavailable.
+            });
+    }, [connectionStatus]);
 
     // (Re)subscribe whenever the symbol changes or the socket (re)connects.
     useEffect(() => {
@@ -149,8 +176,7 @@ const AnalysisTool: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [symbol, connectionStatus]);
 
-    // Persistent live-tick listener: appends new ticks belonging to our
-    // subscription id, keeping only the most recent 500.
+    // Persistent live-tick listener: append new ticks while respecting the selected window.
     useEffect(() => {
         const api = getApi();
         if (!api) return undefined;
@@ -160,7 +186,7 @@ const AnalysisTool: React.FC = () => {
             if (!data.tick || data.tick.id !== subscriptionIdRef.current) return;
 
             const new_tick: TTick = { quote: Number(data.tick.quote), epoch: Number(data.tick.epoch) };
-            setTicks(prev => [...prev, new_tick].slice(-TICK_WINDOW));
+            setTicks(prev => [...prev, new_tick].slice(-tickCountRef.current));
         });
 
         return () => subscription.unsubscribe();
@@ -203,12 +229,30 @@ const AnalysisTool: React.FC = () => {
                     onChange={e => setSymbol(e.target.value)}
                     aria-label={localize('Market')}
                 >
-                    {DIGIT_SYMBOLS.map(item => (
+                    {marketOptions.map(item => (
                         <option key={item.value} value={item.value}>
                             {item.label}
                         </option>
                     ))}
                 </select>
+
+                <label className='analysis-tool__tick-count'>
+                    <span><Localize i18n_default_text='Ticks to analyze' /></span>
+                    <input
+                        type='number'
+                        min={MIN_TICK_COUNT}
+                        max={MAX_TICK_COUNT}
+                        step='50'
+                        value={tickCount}
+                        onChange={event => {
+                            const nextCount = Number(event.target.value);
+                            if (Number.isFinite(nextCount)) {
+                                setTickCount(Math.min(MAX_TICK_COUNT, Math.max(MIN_TICK_COUNT, nextCount)));
+                            }
+                        }}
+                        aria-label={localize('Ticks to analyze')}
+                    />
+                </label>
 
                 <div className='analysis-tool__toggle'>
                     <button
@@ -236,7 +280,7 @@ const AnalysisTool: React.FC = () => {
                         <span>
                             <Localize
                                 i18n_default_text='{{count}}/{{window}} ticks analyzed'
-                                values={{ count: total, window: TICK_WINDOW }}
+                                values={{ count: total, window: tickCount }}
                             />
                         </span>
                         {lastTick && (

@@ -24,6 +24,26 @@
         margin-bottom: 1.2rem;
     }
 
+    &__tick-count {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        min-width: 160px;
+        color: var(--text-less-prominent);
+        font-size: 1rem;
+        font-weight: 600;
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid var(--border-normal);
+            border-radius: 8px;
+            background: var(--general-section-1);
+            color: var(--text-general);
+            font-size: 1.3rem;
+        }
+    }
+
     &__symbol-select {
         flex: 1;
         min-width: 200px;
